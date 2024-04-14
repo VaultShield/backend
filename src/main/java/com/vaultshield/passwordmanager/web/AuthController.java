@@ -24,19 +24,19 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         RegisterResponse response = service.registerUser(request);
-        return ResponseEntity.status(response.getStatus()).body(response.getId());
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request){
         LoginResponse response = service.login(request);
-        return ResponseEntity.status(response.getStatus()).body(response.getToken());
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request){
         ChangePasswordResponse response = service.changePassword(request);
-        return ResponseEntity.status(response.getStatus()).body(null);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
     
 }

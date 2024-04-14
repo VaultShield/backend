@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class ChangePasswordResponse {
     private int status;
+    private String message;
 }

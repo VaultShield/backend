@@ -42,6 +42,7 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
 
       response.setId(userEntity.getId());
       response.setStatus(HttpStatus.OK.value());
+      response.setMessage(HttpStatus.OK.getReasonPhrase());
       return response;
     }
 
@@ -54,12 +55,16 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
           if (!userEntity.get().getPassword().equals(request.getPassword())) {
             response.setToken(null);
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase());
           }else {
             response.setToken(null);
             response.setStatus(HttpStatus.OK.value());
+            response.setMessage(HttpStatus.OK.getReasonPhrase());
           }
       }else {
+        response.setToken(null);
         response.setStatus(HttpStatus.NOT_FOUND.value());
+        response.setMessage(HttpStatus.NOT_FOUND.getReasonPhrase());
       }
       return response;
     }
@@ -78,13 +83,17 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
         UserEntity userEntity = userEntityOpt.get();
           if (!request.getPassword().equals(userEntity.getPassword())){
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase());
           }else {
             userEntity.setPassword(request.getNewPassword());
             repository.save(userEntity);
+
             response.setStatus(HttpStatus.OK.value());
+            response.setMessage(HttpStatus.OK.getReasonPhrase());
           }
       }else {
         response.setStatus(HttpStatus.NOT_FOUND.value());
+        response.setMessage(HttpStatus.NOT_FOUND.getReasonPhrase());
       }
       return response;
     }
