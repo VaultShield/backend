@@ -11,12 +11,14 @@ import com.vaultshield.passwordmanager.models.response.LoginResponse;
 import com.vaultshield.passwordmanager.models.response.RegisterResponse;
 import com.vaultshield.passwordmanager.repository.LoginAndRegistrationRepository;
 import com.vaultshield.passwordmanager.services.LoginAndRegistrationService;
+import com.vaultshield.passwordmanager.services.utils.JsonWebToken;
 
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -26,6 +28,7 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
 
     final private LoginAndRegistrationRepository repository;
     final private DtoAndEntityMapper mapper;
+    final private BCryptPasswordEncoder bcrypt;
 
     @Override
     public RegisterResponse registerUser(RegisterRequest user) {
@@ -35,7 +38,7 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
 
       userDto.setUsername(user.getUsername());
       userDto.setEmail(user.getEmail());
-      userDto.setPassword(user.getPassword());
+      userDto.setPassword(bcrypt.encode(user.getPassword()));
 
       userEntity = mapper.userDtoToUserEntity(userDto);
       repository.save(userEntity);
@@ -50,21 +53,19 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
     public LoginResponse login(LoginRequest request) {
       Optional<UserEntity> userEntity;
       LoginResponse response = new LoginResponse();
+      JsonWebToken jwt = new JsonWebToken();
+
       userEntity = repository.findUserEntityByUsername (request.getUsername());
-      if (userEntity.isPresent()){
-          if (!userEntity.get().getPassword().equals(request.getPassword())) {
+      if (userEntity.isPresent() && bcrypt.matches(request.getPassword(), userEntity.get().getPassword())){
+        
+            response.setToken(jwt.generateToken(userEntity.get().getUsername()));
+            response.setStatus(HttpStatus.OK.value());
+            response.setMessage(HttpStatus.OK.getReasonPhrase());
+
+      }else{
             response.setToken(null);
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase());
-          }else {
-            response.setToken(null);
-            response.setStatus(HttpStatus.OK.value());
-            response.setMessage(HttpStatus.OK.getReasonPhrase());
-          }
-      }else {
-        response.setToken(null);
-        response.setStatus(HttpStatus.NOT_FOUND.value());
-        response.setMessage(HttpStatus.NOT_FOUND.getReasonPhrase());
       }
       return response;
     }
@@ -79,21 +80,17 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
       ChangePasswordResponse response = new ChangePasswordResponse();
       Optional<UserEntity> userEntityOpt = repository.findUserEntityByUsername(request.getUsername());
 
-      if (userEntityOpt.isPresent()){
+      if (userEntityOpt.isPresent() && bcrypt.matches(request.getPassword(), userEntityOpt.get().getPassword())){
         UserEntity userEntity = userEntityOpt.get();
-          if (!request.getPassword().equals(userEntity.getPassword())){
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase());
-          }else {
-            userEntity.setPassword(request.getNewPassword());
-            repository.save(userEntity);
 
-            response.setStatus(HttpStatus.OK.value());
-            response.setMessage(HttpStatus.OK.getReasonPhrase());
-          }
+        userEntity.setPassword(request.getNewPassword());
+        repository.save(userEntity);
+
+        response.setStatus(HttpStatus.OK.value());
+        response.setMessage(HttpStatus.OK.getReasonPhrase());
       }else {
-        response.setStatus(HttpStatus.NOT_FOUND.value());
-        response.setMessage(HttpStatus.NOT_FOUND.getReasonPhrase());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase());
       }
       return response;
     }

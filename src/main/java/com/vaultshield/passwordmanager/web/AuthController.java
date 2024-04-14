@@ -38,5 +38,4 @@ public class AuthController {
         ChangePasswordResponse response = service.changePassword(request);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-    
 }
