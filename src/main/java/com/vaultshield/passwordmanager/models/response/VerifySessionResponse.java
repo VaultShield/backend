@@ -5,8 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RegisterResponse {
-    private String id;
+public class VerifySessionResponse {
+    private String subject;
     private int status;
     private String message;
 }

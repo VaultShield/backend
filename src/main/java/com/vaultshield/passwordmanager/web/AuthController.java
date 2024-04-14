@@ -6,12 +6,15 @@ import com.vaultshield.passwordmanager.models.request.RegisterRequest;
 import com.vaultshield.passwordmanager.models.response.ChangePasswordResponse;
 import com.vaultshield.passwordmanager.models.response.LoginResponse;
 import com.vaultshield.passwordmanager.models.response.RegisterResponse;
+import com.vaultshield.passwordmanager.models.response.VerifySessionResponse;
 import com.vaultshield.passwordmanager.services.impl.LoginAndRegistrationServiceImpl;
+import com.vaultshield.passwordmanager.services.utils.VerifySession;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 
 @RestController
@@ -32,6 +35,20 @@ public class AuthController {
         LoginResponse response = service.login(request);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
+    @GetMapping("/verifysession")
+    public ResponseEntity<?> verifySession(@RequestHeader("Authorization") String header){
+        VerifySession verifier = new VerifySession();
+        VerifySessionResponse response = verifier.verifySession(header);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    
+    // TEST!
+    @GetMapping("/dashboard")
+    public String dashboard(@RequestHeader String header) {
+        return new String();
+    }
+    
 
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request){

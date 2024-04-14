@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationService {
 
+    public String token;
     final private LoginAndRegistrationRepository repository;
     final private DtoAndEntityMapper mapper;
     final private BCryptPasswordEncoder bcrypt;
@@ -41,11 +43,24 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
       userDto.setPassword(bcrypt.encode(user.getPassword()));
 
       userEntity = mapper.userDtoToUserEntity(userDto);
-      repository.save(userEntity);
+      try {
+        repository.save(userEntity);
 
-      response.setId(userEntity.getId());
-      response.setStatus(HttpStatus.OK.value());
-      response.setMessage(HttpStatus.OK.getReasonPhrase());
+        response.setId(userEntity.getId());
+        response.setStatus(HttpStatus.OK.value());
+        response.setMessage(HttpStatus.OK.getReasonPhrase());
+
+      } catch (DataIntegrityViolationException e) {
+
+        response.setId(null);
+        response.setStatus(HttpStatus.CONFLICT.value());
+        response.setMessage("The email or username is already in use.");
+      } catch (Exception e) {
+
+        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setMessage("Internal server error occurred.");
+    }
+
       return response;
     }
 
@@ -57,8 +72,20 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
 
       userEntity = repository.findUserEntityByUsername (request.getUsername());
       if (userEntity.isPresent() && bcrypt.matches(request.getPassword(), userEntity.get().getPassword())){
-        
-            response.setToken(jwt.generateToken(userEntity.get().getUsername()));
+          
+          try {
+            token = jwt.generateToken(userEntity.get().getUsername());
+
+            if (token.isEmpty()){
+              throw new Error();
+            }
+          } catch (Exception e) {
+            response.setToken(null);
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+          }
+
+            response.setToken(token);
             response.setStatus(HttpStatus.OK.value());
             response.setMessage(HttpStatus.OK.getReasonPhrase());
 

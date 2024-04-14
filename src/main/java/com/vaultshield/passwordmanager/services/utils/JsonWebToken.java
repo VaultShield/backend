@@ -21,12 +21,12 @@ public class JsonWebToken {
 
     public String validateToken(String token){
         JWTVerifier verifier = JWT.require(Algorithm.HMAC512(SECRET_KEY)).build();
-
         try {
+            token = token.substring(7);
             DecodedJWT jwt = verifier.verify(token);
             return jwt.getSubject();
         } catch (Exception e) {
-            throw new IllegalStateException(String.format("Token %s is not a valid token", token));
+            throw new IllegalStateException(String.format("Token: %s is not a valid token", token));
         }
     }
 }
