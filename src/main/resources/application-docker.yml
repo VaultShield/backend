@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${SPRING_MYSQl_URL:jdbc:mariadb://localhost:3306/password_manager}
+    url: ${SPRING_MYSQl_URL:mysql://host.docker.internal:3306/car_manager}
     username: ${SPRING_MYSQl_USER:root}
     password: ${MYSQL_ROOT_PASSWORD:mypassword}
   jpa:
@@ -8,11 +8,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 
-springfox:
-  documentation:
-    swagger-ui:
-      enabled: true
-    api-docs:
-      path: /v3/api-docs
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
