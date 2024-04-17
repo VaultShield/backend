@@ -40,6 +40,7 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
       UserEntity userEntity = new UserEntity();
       User userDto = new User();
       RegisterResponse response = new RegisterResponse();
+      JsonWebToken jwt = new JsonWebToken(properties);
 
       userDto.setUsername(user.getUsername());
       userDto.setEmail(user.getEmail());
@@ -49,9 +50,25 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
       try {
         repository.save(userEntity);
 
+        try {
+          token = jwt.generateToken(user.getUsername());
+
+          if (token.isEmpty()){
+            response.setToken(null);
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+            throw new Error();
+          }
+        } catch (Exception e){
+          response.setToken(null);
+          response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+          response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        }
+
         response.setId(userEntity.getId());
         response.setStatus(HttpStatus.OK.value());
         response.setMessage(HttpStatus.OK.getReasonPhrase());
+        response.setToken(token);
 
       } catch (DataIntegrityViolationException e) {
 
