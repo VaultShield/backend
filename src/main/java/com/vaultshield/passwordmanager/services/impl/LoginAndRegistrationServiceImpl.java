@@ -1,5 +1,6 @@
 package com.vaultshield.passwordmanager.services.impl;
 
+import com.vaultshield.passwordmanager.config.PasswordManagerProperties;
 import com.vaultshield.passwordmanager.mapper.DtoAndEntityMapper;
 import com.vaultshield.passwordmanager.models.dto.User;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
@@ -26,6 +27,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationService {
+
+    final private PasswordManagerProperties properties;
 
     public String token;
     final private LoginAndRegistrationRepository repository;
@@ -68,7 +71,7 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
     public LoginResponse login(LoginRequest request) {
       Optional<UserEntity> userEntity;
       LoginResponse response = new LoginResponse();
-      JsonWebToken jwt = new JsonWebToken();
+      JsonWebToken jwt = new JsonWebToken(properties);
 
       userEntity = repository.findUserEntityByUsername (request.getUsername());
       if (userEntity.isPresent() && bcrypt.matches(request.getPassword(), userEntity.get().getPassword())){
