@@ -16,16 +16,19 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 
 @Service
-@RequiredArgsConstructor
+
 public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationService {
 
-    final private LoginAndRegistrationRepository repository;
-    final private DtoAndEntityMapper mapper;
+    @Autowired
+      private LoginAndRegistrationRepository repository;
+    @Autowired
+    private DtoAndEntityMapper mapper;
 
     @Override
     public RegisterResponse registerUser(RegisterRequest user) {
