@@ -6,7 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RegisterResponse {
-    public int status;
-    public String id;
-
+    private String id;
+    private int status;
+    private String message;
+    private String token;
 }

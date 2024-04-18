@@ -1,5 +1,6 @@
 package com.vaultshield.passwordmanager.services.impl;
 
+import com.vaultshield.passwordmanager.config.PasswordManagerProperties;
 import com.vaultshield.passwordmanager.mapper.DtoAndEntityMapper;
 import com.vaultshield.passwordmanager.models.dto.User;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
@@ -11,13 +12,15 @@ import com.vaultshield.passwordmanager.models.response.LoginResponse;
 import com.vaultshield.passwordmanager.models.response.RegisterResponse;
 import com.vaultshield.passwordmanager.repository.LoginAndRegistrationRepository;
 import com.vaultshield.passwordmanager.services.LoginAndRegistrationService;
+import com.vaultshield.passwordmanager.services.utils.JsonWebToken;
 
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -25,26 +28,59 @@ import org.springframework.stereotype.Service;
 
 public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationService {
 
-    @Autowired
-      private LoginAndRegistrationRepository repository;
-    @Autowired
-    private DtoAndEntityMapper mapper;
+    final private PasswordManagerProperties properties;
+
+    public String token;
+    final private LoginAndRegistrationRepository repository;
+    final private DtoAndEntityMapper mapper;
+    final private BCryptPasswordEncoder bcrypt;
 
     @Override
     public RegisterResponse registerUser(RegisterRequest user) {
       UserEntity userEntity = new UserEntity();
       User userDto = new User();
       RegisterResponse response = new RegisterResponse();
+      JsonWebToken jwt = new JsonWebToken(properties);
 
       userDto.setUsername(user.getUsername());
       userDto.setEmail(user.getEmail());
-      userDto.setPassword(user.getPassword());
+      userDto.setPassword(bcrypt.encode(user.getPassword()));
 
       userEntity = mapper.userDtoToUserEntity(userDto);
-      repository.save(userEntity);
+      try {
+        repository.save(userEntity);
 
-      response.setId(userEntity.getId());
-      response.setStatus(HttpStatus.OK.value());
+        try {
+          token = jwt.generateToken(user.getUsername());
+
+          if (token.isEmpty()){
+            response.setToken(null);
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+            throw new Error();
+          }
+        } catch (Exception e){
+          response.setToken(null);
+          response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+          response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        }
+
+        response.setId(userEntity.getId());
+        response.setStatus(HttpStatus.OK.value());
+        response.setMessage(HttpStatus.OK.getReasonPhrase());
+        response.setToken(token);
+
+      } catch (DataIntegrityViolationException e) {
+
+        response.setId(null);
+        response.setStatus(HttpStatus.CONFLICT.value());
+        response.setMessage("The email or username is already in use.");
+      } catch (Exception e) {
+
+        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setMessage("Internal server error occurred.");
+    }
+
       return response;
     }
 
@@ -52,17 +88,31 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
     public LoginResponse login(LoginRequest request) {
       Optional<UserEntity> userEntity;
       LoginResponse response = new LoginResponse();
+      JsonWebToken jwt = new JsonWebToken(properties);
+
       userEntity = repository.findUserEntityByUsername (request.getUsername());
-      if (userEntity.isPresent()){
-          if (!userEntity.get().getPassword().equals(request.getPassword())) {
+      if (userEntity.isPresent() && bcrypt.matches(request.getPassword(), userEntity.get().getPassword())){
+          
+          try {
+            token = jwt.generateToken(userEntity.get().getUsername());
+
+            if (token.isEmpty()){
+              throw new Error();
+            }
+          } catch (Exception e) {
+            response.setToken(null);
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+          }
+
+            response.setToken(token);
+            response.setStatus(HttpStatus.OK.value());
+            response.setMessage(HttpStatus.OK.getReasonPhrase());
+
+      }else{
             response.setToken(null);
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
-          }else {
-            response.setToken(null);
-            response.setStatus(HttpStatus.OK.value());
-          }
-      }else {
-        response.setStatus(HttpStatus.NOT_FOUND.value());
+            response.setMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase());
       }
       return response;
     }
@@ -77,17 +127,17 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
       ChangePasswordResponse response = new ChangePasswordResponse();
       Optional<UserEntity> userEntityOpt = repository.findUserEntityByUsername(request.getUsername());
 
-      if (userEntityOpt.isPresent()){
+      if (userEntityOpt.isPresent() && bcrypt.matches(request.getPassword(), userEntityOpt.get().getPassword())){
         UserEntity userEntity = userEntityOpt.get();
-          if (!request.getPassword().equals(userEntity.getPassword())){
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-          }else {
-            userEntity.setPassword(request.getNewPassword());
-            repository.save(userEntity);
-            response.setStatus(HttpStatus.OK.value());
-          }
+
+        userEntity.setPassword(request.getNewPassword());
+        repository.save(userEntity);
+
+        response.setStatus(HttpStatus.OK.value());
+        response.setMessage(HttpStatus.OK.getReasonPhrase());
       }else {
-        response.setStatus(HttpStatus.NOT_FOUND.value());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase());
       }
       return response;
     }

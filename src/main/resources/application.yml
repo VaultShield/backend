@@ -18,5 +18,4 @@ springfox:
       path: /v3/api-docs
 
 password-manager:
-  jwt-key: ddfdfafdfaffd
-
+  jwtKey: ${JWT_TOKEN:default}

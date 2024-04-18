@@ -1,0 +1,18 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://not-available.com/docs
+    about: Check our documentation for detailed information.
+issue_types:
+  - name: Bug Report
+    title: "Bug Report:"
+    description: "Use this template for reporting bugs."
+    template: bug_report.md
+  - name: Feature Request
+    title: "Feature Request:"
+    description: "Have a suggestion? Use it to request new features."
+    template: feature_request.md
+  - name: General Queries
+    title: "Query:"
+    description: "For general questions, please check our documentation and forum first."
+    template: query_template.md
