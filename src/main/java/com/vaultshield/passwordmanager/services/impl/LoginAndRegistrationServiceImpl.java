@@ -1,5 +1,6 @@
 package com.vaultshield.passwordmanager.services.impl;
 
+import com.vaultshield.passwordmanager.config.PasswordManagerProperties;
 import com.vaultshield.passwordmanager.mapper.DtoAndEntityMapper;
 import com.vaultshield.passwordmanager.models.dto.User;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
@@ -27,6 +28,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationService {
 
+    final private PasswordManagerProperties properties;
+
     public String token;
     final private LoginAndRegistrationRepository repository;
     final private DtoAndEntityMapper mapper;
@@ -37,6 +40,7 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
       UserEntity userEntity = new UserEntity();
       User userDto = new User();
       RegisterResponse response = new RegisterResponse();
+      JsonWebToken jwt = new JsonWebToken(properties);
 
       userDto.setUsername(user.getUsername());
       userDto.setEmail(user.getEmail());
@@ -46,9 +50,25 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
       try {
         repository.save(userEntity);
 
+        try {
+          token = jwt.generateToken(user.getUsername());
+
+          if (token.isEmpty()){
+            response.setToken(null);
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+            throw new Error();
+          }
+        } catch (Exception e){
+          response.setToken(null);
+          response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+          response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        }
+
         response.setId(userEntity.getId());
         response.setStatus(HttpStatus.OK.value());
         response.setMessage(HttpStatus.OK.getReasonPhrase());
+        response.setToken(token);
 
       } catch (DataIntegrityViolationException e) {
 
@@ -68,7 +88,7 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
     public LoginResponse login(LoginRequest request) {
       Optional<UserEntity> userEntity;
       LoginResponse response = new LoginResponse();
-      JsonWebToken jwt = new JsonWebToken();
+      JsonWebToken jwt = new JsonWebToken(properties);
 
       userEntity = repository.findUserEntityByUsername (request.getUsername());
       if (userEntity.isPresent() && bcrypt.matches(request.getPassword(), userEntity.get().getPassword())){

@@ -1,5 +1,6 @@
 package com.vaultshield.passwordmanager.web;
 
+import com.vaultshield.passwordmanager.config.PasswordManagerProperties;
 import com.vaultshield.passwordmanager.models.request.ChangePasswordRequest;
 import com.vaultshield.passwordmanager.models.request.LoginRequest;
 import com.vaultshield.passwordmanager.models.request.RegisterRequest;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     final private LoginAndRegistrationServiceImpl service;
+    final private PasswordManagerProperties properties;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -38,7 +40,7 @@ public class AuthController {
 
     @GetMapping("/verifysession")
     public ResponseEntity<?> verifySession(@RequestHeader("Authorization") String header){
-        VerifySession verifier = new VerifySession();
+        VerifySession verifier = new VerifySession(properties);
         VerifySessionResponse response = verifier.verifySession(header);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
