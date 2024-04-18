@@ -16,3 +16,6 @@ springfox:
       enabled: true
     api-docs:
       path: /v3/api-docs
+
+password-manager:
+  jwt-key: ddfdfafdfaffd

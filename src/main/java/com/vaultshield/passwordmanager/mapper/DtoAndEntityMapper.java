@@ -52,4 +52,12 @@ public class DtoAndEntityMapper {
         return response;
     }
 
+    public Credentials credentialsEntityToCredentialsDto(CredentialsEntity entity){
+        Credentials response = new Credentials();
+        response.setAccount(entity.getPassword().getPassword());
+        response.setPassword(entity.getPassword().getAccount());
+        response.setId(entity.getId());
+        return response;
+    }
+
 }

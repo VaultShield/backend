@@ -1,9 +1,15 @@
 package com.vaultshield.passwordmanager.web;
 
+import com.vaultshield.passwordmanager.models.dto.Credentials;
+import com.vaultshield.passwordmanager.models.request.ChangedCredentialsRequest;
+import com.vaultshield.passwordmanager.models.request.CommonIdRequest;
 import com.vaultshield.passwordmanager.models.request.CreateNewCredentialRequest;
+import com.vaultshield.passwordmanager.models.request.FindCredentialsRequest;
 import com.vaultshield.passwordmanager.services.impl.CredentialsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -16,12 +22,18 @@ public class CredentialController {
         service.insertCredential(request);
     }
 
-    @GetMapping("/update-credential/{credential-id}")
-    private void updateCredentials(){}
+    @PostMapping("/update-credential")
+    private void updateCredentials(@RequestBody  ChangedCredentialsRequest request){
+        service.modifyCredential(request);
+    }
 
-    @PostMapping("/delete-credential/{credential-id}")
-    private void deleteCredential(){}
+    @PostMapping("/delete-credential")
+    private void deleteCredential(@RequestBody  CommonIdRequest request){
+        service.deleteCredential(request);
+    }
 
-    @PostMapping("/add-credential")
-    private void createCredential(){}
+    @PostMapping("/find-all-credential")
+    private List<Credentials> createCredential(@RequestBody FindCredentialsRequest request){
+       return service.findAllCredentials(request);
+    }
 }

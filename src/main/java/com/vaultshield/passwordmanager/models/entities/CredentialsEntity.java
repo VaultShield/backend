@@ -36,6 +36,13 @@ public class CredentialsEntity {
         this.id = id;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public String getCredentialTypeId() {
+        return credentialTypeId;
+    }
 
     public void setCredentialTypeId(String credentialTypeId) {
         this.credentialTypeId = credentialTypeId;

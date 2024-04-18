@@ -6,15 +6,18 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Credentials {
-    private String defaultPassword;
+    private String id;
     private String userId;
-
-    public String getDefaultPassword() {
-        return defaultPassword;
+    private String password;
+    private String account;
+    private String credentialName;
+    private String note;
+    public String getId() {
+        return id;
     }
 
-    public void setDefaultPassword(String defaultPassword) {
-        this.defaultPassword = defaultPassword;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUserId() {
@@ -57,8 +60,5 @@ public class Credentials {
         this.password = password;
     }
 
-    private String credentialName;
-    private String account;
-    private String note;
-    private String password;
+
 }
