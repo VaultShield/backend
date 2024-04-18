@@ -1,13 +1,11 @@
 package com.vaultshield.passwordmanager.models.request;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ChangedCredentialsRequest extends  CreateNewCredentialRequest {
     private String credentialId;
 
-    public String getCredentialId() {
-        return credentialId;
-    }
-
-    public void setCredentialId(String credentialId) {
-        this.credentialId = credentialId;
-    }
 }
