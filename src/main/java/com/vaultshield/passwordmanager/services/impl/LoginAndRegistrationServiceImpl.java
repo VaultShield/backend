@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-
+@RequiredArgsConstructor
 public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationService {
 
     final private PasswordManagerProperties properties;
