@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  mysql:
+    ports:
+      - "3307:3306"
+    image: mysql:5.7
+    # restart: always
+    #environment:
+    env_file:
+      - car-manager-config-mysql.envfile
+      #MYSQL_ROOT_PASSWORD: mypassword
+      #MYSQL_DATABASE: car_manager
+
+
+  car-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    depends_on:
+      -  mysql
+    env_file:
+      - car-manager-config-docker.envfile
+    restart: always
+      #environment:
+      #SPRING_MYSQl_URL: jdbc:mysql://host.docker.internal:3307/car_manager
+      #MYSQL_ROOT_PASSWORD: mypassword
+    #SPRING_MYSQl_USER: root
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
