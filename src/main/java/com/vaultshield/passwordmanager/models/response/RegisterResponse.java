@@ -20,4 +20,5 @@ public class RegisterResponse {
 
     @Schema(description = "Login message", example = ExampleValues.LOGIN_MSG)
     private String message;
+    private String token;
 }
