@@ -95,7 +95,9 @@ public class CredentialsServiceImpl implements CredentialsService {
     }
 
     @Override
-    public Credentials findOneCredential() {
-        return null;
+    public Credentials findOneCredential(CommonIdRequest request) {
+       CredentialsEntity entity = credentialsRepository.findById(request.getId()).get();
+       Credentials response = mapper.credentialsEntityToCredentialsDto(entity);
+        return response;
     }
 }

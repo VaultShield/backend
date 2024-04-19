@@ -21,7 +21,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())  // CSRF !!
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/verifysession").permitAll() // to improve!!
+                .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/verifysession","/api/credential/**").permitAll() // to improve!!
                         .requestMatchers("/api/user/**").permitAll()
                 .anyRequest().authenticated())
             .httpBasic(httpBasic -> httpBasic.realmName("api"));

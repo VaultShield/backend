@@ -16,6 +16,6 @@ public interface CredentialsService {
 
      List<Credentials> findAllCredentials(FindCredentialsRequest request);
 
-     Credentials findOneCredential();
+     Credentials findOneCredential(CommonIdRequest request);
 
 }

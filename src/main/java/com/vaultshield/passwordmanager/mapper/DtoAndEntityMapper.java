@@ -54,8 +54,8 @@ public class DtoAndEntityMapper {
 
     public Credentials credentialsEntityToCredentialsDto(CredentialsEntity entity){
         Credentials response = new Credentials();
-        response.setAccount(entity.getPassword().getPassword());
-        response.setPassword(entity.getPassword().getAccount());
+        response.setAccount(entity.getPassword().getAccount());
+        response.setPassword(entity.getPassword().getPassword());
         response.setId(entity.getId());
         return response;
     }

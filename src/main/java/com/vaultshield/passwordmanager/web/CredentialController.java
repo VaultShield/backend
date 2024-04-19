@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/credential")
 public class CredentialController {
 
     @Autowired
@@ -22,12 +22,12 @@ public class CredentialController {
         service.insertCredential(request);
     }
 
-    @PostMapping("/update-credential")
+    @PatchMapping("/update-credential")
     private void updateCredentials(@RequestBody  ChangedCredentialsRequest request){
         service.modifyCredential(request);
     }
 
-    @PostMapping("/delete-credential")
+    @DeleteMapping("/delete-credential")
     private void deleteCredential(@RequestBody  CommonIdRequest request){
         service.deleteCredential(request);
     }
@@ -36,4 +36,11 @@ public class CredentialController {
     private List<Credentials> createCredential(@RequestBody FindCredentialsRequest request){
        return service.findAllCredentials(request);
     }
+
+    @PostMapping("/find-credential")
+    private Credentials findCredential(@RequestBody  CommonIdRequest request){
+      return service.findOneCredential(request);
+    }
+
+
 }
