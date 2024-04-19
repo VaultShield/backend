@@ -23,8 +23,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/verifysession","/api/credential/**").permitAll() // to improve!!
                         .requestMatchers("/api/user/**").permitAll()
-                .anyRequest().authenticated())
-            .httpBasic(httpBasic -> httpBasic.realmName("api"));
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated())
+                .httpBasic(httpBasic -> httpBasic.realmName("api"));
 
         return http.build();
     }
