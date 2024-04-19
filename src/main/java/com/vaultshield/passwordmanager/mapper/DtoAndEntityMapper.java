@@ -1,22 +1,28 @@
 package com.vaultshield.passwordmanager.mapper;
 
-import java.time.LocalDateTime;
-
+import com.vaultshield.passwordmanager.models.dto.Credentials;
+import com.vaultshield.passwordmanager.models.dto.User;
+import com.vaultshield.passwordmanager.models.entities.CredentialsEntity;
+import com.vaultshield.passwordmanager.models.entities.PasswordEntity;
+import com.vaultshield.passwordmanager.models.entities.UserEntity;
+import com.vaultshield.passwordmanager.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.vaultshield.passwordmanager.models.dto.User;
-import com.vaultshield.passwordmanager.models.entities.UserEntity;
+import java.time.LocalDateTime;
 
 @Component
-public class DtoAndEntityMapper implements EntitiesMapper{
+public class DtoAndEntityMapper {
 
-    @Override
+    @Autowired
+    private UserRepository userRepository;
+
     public User UserEntitiesToUserDto(UserEntity entity) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'UserEntitiesToUserDto'");
     }
 
-    @Override
+
     public UserEntity userDtoToUserEntity(User userDto) {
         String password = userDto.getPassword();
         String email = userDto.getEmail();
@@ -34,6 +40,24 @@ public class DtoAndEntityMapper implements EntitiesMapper{
         userEntity.setUpdateDate(LocalDateTime.now());
 
         return userEntity;
+    }
+
+    public CredentialsEntity credentialDtoToCredentialEntity(Credentials credentialsDto){
+        CredentialsEntity response = new CredentialsEntity();
+      //  PasswordEntity password = new PasswordEntity();
+      //  password.setPassword(credentialsDto.getPassword());
+      //  password.setAccount(credentialsDto.getAccount());
+        response.setCreateDate(LocalDateTime.now());
+      //  response.setPassword(password);
+        return response;
+    }
+
+    public Credentials credentialsEntityToCredentialsDto(CredentialsEntity entity){
+        Credentials response = new Credentials();
+        response.setAccount(entity.getPassword().getAccount());
+        response.setPassword(entity.getPassword().getPassword());
+        response.setId(entity.getId());
+        return response;
     }
 
 }

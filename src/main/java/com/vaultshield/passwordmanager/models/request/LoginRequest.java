@@ -18,5 +18,6 @@ public class LoginRequest {
 
     @Schema(example = ExampleValues.PASSWORD)
     public String password;
+
 }
 

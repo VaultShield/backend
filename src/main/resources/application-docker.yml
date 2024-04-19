@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: ${SPRING_MYSQl_URL:mysql://host.docker.internal:3306/car_manager}
+    username: ${SPRING_MYSQl_USER:root}
+    password: ${MYSQL_ROOT_PASSWORD:mypassword}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+    hibernate:
+      ddl-auto: create
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Table(name="users", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"username"}),
@@ -32,5 +33,8 @@ public class UserEntity {
 
     private LocalDateTime updateDate;
 
+    @OneToMany(mappedBy="user",cascade = CascadeType.ALL)
+    private Set<CredentialsEntity> credentials;
+    
     private LocalDateTime softDeleteDate;
 }
