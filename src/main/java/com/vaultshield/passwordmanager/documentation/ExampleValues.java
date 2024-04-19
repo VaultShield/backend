@@ -19,4 +19,23 @@ public class ExampleValues {
 
     public static final String ERROR_500 = "Internal Server Error";
 
+    public static final String STATUS_200 = "200";
+
+    public static final String STATUS_409 = "409";
+
+    public static final String STATUS_409_MSG = "The email or username is already in use.";
+
+    public static final String ID_NULL = "null";
+
+    public static final String LOGIN_MSG = "OK";
+
+    public static final String TOKEN = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwZXBpdG8iLCJleHAiOjE3MTM1MzQ0NzB9.pJBFOO_fSvUF5DHjc3eAIeUdofORpdgkOjId5Iyb0vBX4RY7X9CdZuB0eCRtY9JVLUnzb6m88dVIRkpF9ZGRIQ";
+
+    public static final String STATUS_401 = "401";
+
+    public static final String STATUS_401_MSG = "Unauthorized";
+
+    public static final String STATUS_400_USERNAME = "Username already exists";
+
+    public static final String STATUS_400_EMAIL = "Email already exists";
 }
