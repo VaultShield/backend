@@ -55,4 +55,14 @@ public class PasswordServiceImpl implements PasswordService {
         return passwordRepository.save(passwordEntity);
     }
 
+    @Override
+    public PasswordEntity deletePassword(String id) throws NotFoundException {
+        Optional<PasswordEntity> passwordToDelete = passwordRepository.findById(id);
+        if (!passwordToDelete.isPresent()) {
+            throw new NotFoundException("No password found with ID: " + id);
+        }
+        passwordRepository.deleteById(id);
+        return passwordToDelete.get();
+    }
+
 }

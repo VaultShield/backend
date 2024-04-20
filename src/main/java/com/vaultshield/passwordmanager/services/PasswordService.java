@@ -7,8 +7,10 @@ import com.vaultshield.passwordmanager.models.request.CredentialRequest;
 
 public interface PasswordService {
 
-    PasswordEntity createPassword(CredentialRequest password) throws SaveException;
+    PasswordEntity createPassword(CredentialRequest request) throws SaveException;
 
     PasswordEntity updatePassword(CredentialRequest request, String id) throws SaveException, NotFoundException;
+
+    PasswordEntity deletePassword(String id) throws NotFoundException;
 
 }
