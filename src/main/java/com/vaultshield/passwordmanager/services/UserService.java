@@ -1,5 +1,6 @@
 package com.vaultshield.passwordmanager.services;
 
+import com.vaultshield.passwordmanager.exceptions.QueryError;
 import com.vaultshield.passwordmanager.exceptions.UserNotFoundException;
 import com.vaultshield.passwordmanager.exceptions.UserSaveException;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
@@ -16,4 +17,7 @@ public interface UserService {
     UserEntity getUserByEmail(String email) throws UserNotFoundException;
 
     UserEntity getUserByUsername(String username) throws UserNotFoundException;
+
+    UserEntity searchUser(String by, String value) throws UserNotFoundException, QueryError;
+
 }
