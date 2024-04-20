@@ -5,7 +5,6 @@ import java.util.List;
 import com.vaultshield.passwordmanager.exceptions.NotFoundException;
 import com.vaultshield.passwordmanager.exceptions.SaveException;
 import com.vaultshield.passwordmanager.models.entities.CredentialsEntity;
-import com.vaultshield.passwordmanager.models.request.CommonIdRequest;
 import com.vaultshield.passwordmanager.models.request.CredentialRequest;
 
 public interface CredentialsService {
@@ -14,7 +13,7 @@ public interface CredentialsService {
 
     CredentialsEntity modifyCredential(CredentialRequest request, String id) throws SaveException, NotFoundException;
 
-    void deleteCredential(CommonIdRequest request);
+    CredentialsEntity deleteCredential(String id) throws NotFoundException;
 
     List<CredentialsEntity> findAllCredentials(String userId) throws NotFoundException;
 

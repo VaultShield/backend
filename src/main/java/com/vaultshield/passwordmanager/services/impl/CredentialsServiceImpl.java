@@ -13,14 +13,11 @@ import com.vaultshield.passwordmanager.mapper.DtoAndEntityMapper;
 import com.vaultshield.passwordmanager.models.entities.CredentialsEntity;
 import com.vaultshield.passwordmanager.models.entities.PasswordEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
-import com.vaultshield.passwordmanager.models.request.CommonIdRequest;
 import com.vaultshield.passwordmanager.models.request.CredentialRequest;
 import com.vaultshield.passwordmanager.repository.CredentialsRepository;
 import com.vaultshield.passwordmanager.repository.LoginAndRegistrationRepository;
 import com.vaultshield.passwordmanager.repository.UserRepository;
 import com.vaultshield.passwordmanager.services.CredentialsService;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class CredentialsServiceImpl implements CredentialsService {
@@ -44,7 +41,6 @@ public class CredentialsServiceImpl implements CredentialsService {
     public CredentialsEntity insertCredential(CredentialRequest request) throws SaveException {
 
         CredentialsEntity entity = new CredentialsEntity();
-        //entity.setCredentialTypeId(request.getCredentialTypeId());
         entity.setCreateDate(LocalDateTime.now());
 
         UserEntity userEntity = userRepository.findById(request.getUserId()).orElse(null);
@@ -90,11 +86,14 @@ public class CredentialsServiceImpl implements CredentialsService {
     }
 
     @Override
-    @Transactional
-    public void deleteCredential(CommonIdRequest request) {
-        // entityToUpdateOptional<CredentialsEntity> entity =
-        // credentialsRepository.findById(request.getId());
-        credentialsRepository.deleteById(request.getId());
+    public CredentialsEntity deleteCredential(String id) throws NotFoundException {
+        Optional<CredentialsEntity> entityToUpdate = credentialsRepository.findById(id);
+        if (!entityToUpdate.isPresent()) {
+            throw new NotFoundException("No credentials found with ID: " + id);
+        }
+        passwordService.deletePassword(entityToUpdate.get().getPassword().getId());
+        credentialsRepository.deleteById(id);
+        return entityToUpdate.get();
     }
 
     @Override
