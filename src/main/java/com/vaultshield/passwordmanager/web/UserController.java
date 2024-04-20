@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,11 +21,14 @@ import com.vaultshield.passwordmanager.models.response.UserResponse;
 import com.vaultshield.passwordmanager.services.impl.UserServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "User", description = "Update user information")
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -32,14 +36,17 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
 
-    @Operation(summary = "Find a user by id")
+    @Operation(summary = "Search a user by id/email/username")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserResponse.class))),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = NotFoundErrorExample.class)))
     })
-    @GetMapping("/{id}")
-    public UserResponse seeUserById(@PathVariable String id) {
-        return UserMapper.toUserResponse(userService.getUserById(id));
+    @GetMapping("/search")
+    public UserResponse searchUser(
+            @Parameter(schema = @Schema(allowableValues = { "id",
+                    "email", "username" })) @RequestParam(name = "by") String by,
+            @RequestParam(name = "value") String value) {
+        return UserMapper.toUserResponse(userService.searchUser(by, value));
     }
 
     @Operation(summary = "Update an existing user")
@@ -64,26 +71,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable String id) {
         userService.removeUser(id);
-    }
-
-    @Operation(summary = "Find a user by email")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserResponse.class))),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = NotFoundErrorExample.class)))
-    })
-    @GetMapping("/email/{email}")
-    public UserResponse seeUserByEmail(@PathVariable String email) {
-        return UserMapper.toUserResponse(userService.getUserByEmail(email));
-    }
-
-    @Operation(summary = "Find a user by username")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserResponse.class))),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = NotFoundErrorExample.class)))
-    })
-    @GetMapping("/username/{username}")
-    public UserResponse seeUserByUsername(@PathVariable String username) {
-        return UserMapper.toUserResponse(userService.getUserByUsername(username));
     }
 
 }

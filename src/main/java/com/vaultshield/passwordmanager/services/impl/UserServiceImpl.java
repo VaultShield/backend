@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vaultshield.passwordmanager.exceptions.QueryError;
 import com.vaultshield.passwordmanager.exceptions.UserNotFoundException;
 import com.vaultshield.passwordmanager.exceptions.UserSaveException;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
@@ -72,5 +73,24 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("User not found - username does not exists");
 
         return user.get();
+    }
+
+    @Override
+    public UserEntity searchUser(String by, String value) throws UserNotFoundException, QueryError {
+        UserEntity user = null;
+        switch (by) {
+            case "id":
+                user = getUserById(value);
+                break;
+            case "email":
+                user = getUserByEmail(value);
+                break;
+            case "username":
+                user = getUserByUsername(value);
+                break;
+            default:
+                throw new QueryError("Incorrect query. Use 'id', 'username' o 'email'.");
+        }
+        return user;
     }
 }
