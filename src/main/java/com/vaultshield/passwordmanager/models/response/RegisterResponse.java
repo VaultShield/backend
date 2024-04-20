@@ -15,7 +15,7 @@ public class RegisterResponse {
     @Schema(description = "User ID", example = ExampleValues.ID)
     private String id;
 
-    @Schema(description = "Status code", example = ExampleValues.STATUS_200)
+    @Schema(description = "Status code", example = ExampleValues.STATUS_201)
     private int status;
 
     @Schema(description = "Login message", example = ExampleValues.LOGIN_MSG)

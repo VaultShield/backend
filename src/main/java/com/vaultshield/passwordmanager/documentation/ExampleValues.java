@@ -23,6 +23,8 @@ public class ExampleValues {
 
     public static final String STATUS_200 = "200";
 
+    public static final String STATUS_201 = "201";
+
     public static final String STATUS_409 = "409";
 
     public static final String STATUS_409_MSG = "The email or username is already in use.";
