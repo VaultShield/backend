@@ -1,28 +1,28 @@
 version: '3.8'
 
 services:
-  mysql:
+  postgres:
     ports:
-      - "3307:3306"
-    image: mysql:5.7
+      - "5433:5433"
+    image: postgres:latest
     # restart: always
     #environment:
     env_file:
-      - car-manager-config-mysql.envfile
+      - password-manager-config-postgres.envfile
       #MYSQL_ROOT_PASSWORD: mypassword
       #MYSQL_DATABASE: car_manager
 
 
-  car-manager:
+  password-manager:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8081:8080"
     depends_on:
-      -  mysql
-    env_file:
-      - car-manager-config-docker.envfile
+      -  postgres
+    #env_file:
+      #- password-manager-config-docker.envfile
     restart: always
       #environment:
       #SPRING_MYSQl_URL: jdbc:mysql://host.docker.internal:3307/car_manager
