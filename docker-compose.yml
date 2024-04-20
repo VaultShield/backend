@@ -2,32 +2,26 @@ version: '3.8'
 
 services:
   postgres:
-    ports:
-      - "5433:5433"
     image: postgres:latest
-    # restart: always
-    #environment:
-    env_file:
-      - password-manager-config-postgres.envfile
-      #MYSQL_ROOT_PASSWORD: mypassword
-      #MYSQL_DATABASE: car_manager
-
-
-  password-manager:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8080"
-    depends_on:
-      -  postgres
-    #env_file:
-      #- password-manager-config-docker.envfile
-    restart: always
-      #environment:
-      #SPRING_MYSQl_URL: jdbc:mysql://host.docker.internal:3307/car_manager
-      #MYSQL_ROOT_PASSWORD: mypassword
-    #SPRING_MYSQl_USER: root
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: db
+    ports:
+      - "5432:5432"
 
+
+  java-service:
+    image: openjdk:17
+    volumes:
+      - .:/usr/src/vaultshield
+    working_dir: /usr/src/vaultshield
+    command: java -jar target/vault-shield-0.0.5-SNAPSHOT.jar
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      JWT_TOKEN: "VAULTSHIELD_KEY"
+      SPRING_PROFILES_ACTIVE: docker

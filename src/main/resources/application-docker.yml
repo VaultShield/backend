@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/password-manager}
+    url: ${POSTGRES_URL:jdbc:postgresql://postgres:5432/db}
     username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD:root}
+    password: ${POSTGRES_PASSWORD:admin}
   jpa:
     properties:
       hibernate:
