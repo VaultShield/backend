@@ -25,15 +25,17 @@ services:
   
   go-service:
     build:
-      context: /go/src/import_export/src
+      context: /go/import_export/src
       dockerfile: Dockerfile
+    volumes:
+      - ./go/import_export/src:/app
     depends_on:
       - postgres
     ports:
       - "4000:4000"
     restart: always
     environment:
-      HOSTNAME: localhost
+      HOSTNAME: postgres
       USER: postgres
       PASSWORD: admin
       DATABASE: db

@@ -1,7 +1,7 @@
 package request
 
 type ExportationRequest struct {
-	Username        string   `json:"username"`
+	Account         string   `json:"account"`
 	CredentialsType []string `json:"credentials_type"`
 	FormatToExport  string   `json:"format_to_export"`
 }

@@ -2,18 +2,21 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 
 	_ "github.com/lib/pq"
 )
 
-func ConnectionDB() *sql.DB {
+var DB *sql.DB
+
+func ConnectionDB() (*sql.DB, error) {
 	settings := setSettings()
 
 	if settings == nil {
-		log.Println(&settings)
-		panic("clean settings")
+		log.Println("Clean settings: ", &settings)
+		return nil, errors.New("clean settings")
 	}
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
@@ -21,16 +24,17 @@ func ConnectionDB() *sql.DB {
 
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
-	defer db.Close()
 
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 
-	log.Println("connected")
+	log.Printf("connected to %s:%v", settings.Hostname, settings.Port)
 
-	return db
+	return db, nil
 }
