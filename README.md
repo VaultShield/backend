@@ -11,10 +11,9 @@ Welcome to [VaultShield](https://github.com/VaultShield) Java API, please follow
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
-- **Java JDK 17**: Make sure Java JDK 17 on your machine (you can check by running `java -version`).
-- **Maven**: You need Maven installed to handle dependencies and to build the project. Install it from [here](https://maven.apache.org/install.html).
 - **Docker**: You will need Docker to run the containers for the database and the application. Download it from [Docker's website](https://www.docker.com/get-started).
 - **Ports**: Make sure you have port 8080 **(API)** and 5432 **(POSTGRESQL)** not used by another resource
+- No, you don't need Java or Maven! You just have to run the script correctly.
 
 ## Installation
 
