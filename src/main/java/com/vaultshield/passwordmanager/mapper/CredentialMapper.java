@@ -15,6 +15,7 @@ public class CredentialMapper {
                 credential.getState(),
                 credential.getFavorite(),
                 credential.getGroupId(),
-                credential.getUser().getId());
+                credential.getUser().getId(),
+                credential.getPassword().getId());
     }
 }
