@@ -1,21 +1,12 @@
 #!/bin/bash
 
-echo "Running Maven clean install..."
-mvn clean install -DskipTests
+echo "Building Docker images and starting services with Docker Compose..."
 
+docker-compose up --build -d
+
+# verificar la operación
 if [ $? -eq 0 ]; then
-    echo "Maven build succeeded."
-    echo "Building Docker images..."
-    docker-compose build
-
-    if [ $? -eq 0 ]; then
-        echo "Docker images built successfully."
-
-        echo "Starting services with Docker Compose in detached mode..."
-        docker-compose up -d
-    else
-        echo "Docker build failed with exit code $?" >&2
-    fi
+    echo "Docker containers are up and running."
 else
-    echo "Maven build failed with exit code $?" >&2
+    echo "Failed to start Docker containers. Exit code: $?" >&2
 fi

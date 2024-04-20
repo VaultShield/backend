@@ -10,13 +10,10 @@ services:
     ports:
       - "5432:5432"
 
-
   java-service:
-    image: openjdk:17
-    volumes:
-      - .:/usr/src/vaultshield
-    working_dir: /usr/src/vaultshield
-    command: java -jar target/vault-shield-0.0.5-SNAPSHOT.jar
+    build:
+      context: .
+      dockerfile: Dockerfile
     depends_on:
       - postgres
     ports:

@@ -1,16 +1,12 @@
-FROM postgres:latest
+FROM maven:3.9.6-openjdk-17-slim as build
 
-FROM openjdk:17
- 
-COPY target/password-manager-0.0.2-SNAPSHOT.jar password-manager-0.0.2-SNAPSHOT.jar
+WORKDIR /app
+COPY . .
 
-EXPOSE 8081
+RUN mvn clean install -DskipTests
 
-ENTRYPOINT ["java", "-jar", "password-manager-0.0.2-SNAPSHOT.jar"]
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/vault-shield-0.0.5-SNAPSHOT.jar /app/
 
-ENV POSTGRES_USER=postgres
-ENV POSTGRES_PASSWORD=admin
-ENV POSTGRES_DB=db
-ENV JWT_TOKEN="VAULTSHIELD_KEY"
-
-EXPOSE 5432
+CMD ["java", "-jar", "vault-shield-0.0.5-SNAPSHOT.jar"]
