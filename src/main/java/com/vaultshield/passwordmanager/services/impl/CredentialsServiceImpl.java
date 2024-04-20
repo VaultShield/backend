@@ -13,7 +13,6 @@ import com.vaultshield.passwordmanager.mapper.DtoAndEntityMapper;
 import com.vaultshield.passwordmanager.models.entities.CredentialsEntity;
 import com.vaultshield.passwordmanager.models.entities.PasswordEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
-import com.vaultshield.passwordmanager.models.request.ChangedCredentialsRequest;
 import com.vaultshield.passwordmanager.models.request.CommonIdRequest;
 import com.vaultshield.passwordmanager.models.request.CredentialRequest;
 import com.vaultshield.passwordmanager.repository.CredentialsRepository;
@@ -66,24 +65,35 @@ public class CredentialsServiceImpl implements CredentialsService {
     }
 
     @Override
-    public void modifyCredential(ChangedCredentialsRequest request) {
-       Optional<CredentialsEntity> entity  = credentialsRepository.findById(request.getCredentialId());
-     //  password.setAccount(request.getAccount());
-      // password.setTitle(request.getTitle());
-      // password.setPassword(request.getPassword());
-
-        if (entity.isPresent()){
-            entity.get().getPassword().setPassword(request.getPassword());
-            entity.get().setUpdateDate(LocalDateTime.now());
-            entity.get().getPassword().setAccount(request.getAccount());
-            credentialsRepository.save(entity.get());
+    public CredentialsEntity modifyCredential(CredentialRequest request, String id)
+            throws SaveException, NotFoundException {
+        Optional<CredentialsEntity> entityToUpdate = credentialsRepository.findById(id);
+        if (!entityToUpdate.isPresent()) {
+            throw new NotFoundException("No credentials found with ID: " + id);
         }
+        CredentialsEntity credentialToUpdate = entityToUpdate.get();
+        if (request.getPassword() != null) {
+            String passwordId = credentialToUpdate.getPassword().getId();
+            PasswordEntity passwordEntity = passwordService.updatePassword(request, passwordId);
+            passwordEntity.setCredentials(credentialToUpdate);
+            credentialToUpdate.setPassword(passwordEntity);
+        }
+        if (request.getFavorite() != null) {
+            credentialToUpdate.setFavorite(request.getFavorite());
+        }
+        if (request.getGroupId() != null) {
+            credentialToUpdate.setGroupId(request.getGroupId());
+        }
+     credentialToUpdate.setState("Active");
+     credentialToUpdate.setUpdateDate(LocalDateTime.now());
+     return credentialsRepository.save(credentialToUpdate);
     }
 
     @Override
     @Transactional
     public void deleteCredential(CommonIdRequest request) {
-       // Optional<CredentialsEntity> entity  = credentialsRepository.findById(request.getId());
+        // entityToUpdateOptional<CredentialsEntity> entity =
+        // credentialsRepository.findById(request.getId());
         credentialsRepository.deleteById(request.getId());
     }
 
