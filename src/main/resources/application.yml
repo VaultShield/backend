@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${SPRING_MYSQL_URL:jdbc:postgresql://localhost:5433/db}
-    username: ${SPRING_MYSQL_USER:postgres}
-    password: ${MYSQL_ROOT_PASSWORD:admin}
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/db}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:admin}
   jpa:
     properties:
       hibernate:

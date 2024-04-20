@@ -1,8 +1,12 @@
-FROM postgres:latest
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 
-ENV POSTGRES_USER=postgres
-ENV POSTGRES_PASSWORD=admin
-ENV POSTGRES_DB=db
-ENV JWT_TOKEN="VAULTSHIELD_KEY"
+WORKDIR /app
+COPY . .
 
-EXPOSE 5432
+RUN mvn clean install -DskipTests
+
+FROM eclipse-temurin:17-alpine
+WORKDIR /app
+COPY --from=build /app/target/vault-shield-0.0.5-SNAPSHOT.jar /app/
+
+CMD ["java", "-jar", "vault-shield-0.0.5-SNAPSHOT.jar"]
