@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vaultshield.passwordmanager.documentation.ErrorExamples.NotFoundCredentialExample;
 import com.vaultshield.passwordmanager.documentation.ErrorExamples.NotFoundErrorExample;
 import com.vaultshield.passwordmanager.mapper.CredentialMapper;
-import com.vaultshield.passwordmanager.models.dto.Credentials;
 import com.vaultshield.passwordmanager.models.request.ChangedCredentialsRequest;
 import com.vaultshield.passwordmanager.models.request.CommonIdRequest;
 import com.vaultshield.passwordmanager.models.request.CredentialRequest;
@@ -65,9 +65,14 @@ public class CredentialController {
         return CredentialMapper.toCredentialResponseList(service.findAllCredentials(userId));
     }
 
-    @PostMapping("/find-credential")
-    private Credentials findCredential(@RequestBody  CommonIdRequest request){
-      return service.findOneCredential(request);
+    @Operation(summary = "See a credential by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CredentialResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Credential not found", content = @Content(schema = @Schema(implementation = NotFoundCredentialExample.class)))
+    })
+    @GetMapping("/find-credential/{id}")
+    private CredentialResponse findCredential(@PathVariable String id) {
+        return CredentialMapper.toCredentialResponse(service.findOneCredential(id));
     }
 
 
