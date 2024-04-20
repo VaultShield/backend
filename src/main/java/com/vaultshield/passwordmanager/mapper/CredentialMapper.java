@@ -1,5 +1,8 @@
 package com.vaultshield.passwordmanager.mapper;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.vaultshield.passwordmanager.models.entities.CredentialsEntity;
 import com.vaultshield.passwordmanager.models.response.CredentialResponse;
 
@@ -17,5 +20,9 @@ public class CredentialMapper {
                 credential.getGroupId(),
                 credential.getUser().getId(),
                 credential.getPassword().getId());
+    }
+
+    public static List<CredentialResponse> toCredentialResponseList(List<CredentialsEntity> credentials) {
+        return credentials.stream().map(CredentialMapper::toCredentialResponse).collect(Collectors.toList());
     }
 }
