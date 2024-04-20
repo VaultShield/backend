@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: ${SPRING_MYSQL_URL:jdbc:postgresql://localhost:5433/db}
+    username: ${SPRING_MYSQL_USER:postgres}
+    password: ${MYSQL_ROOT_PASSWORD:admin}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+
+springfox:
+  documentation:
+    swagger-ui:
+      enabled: true
+    api-docs:
+      path: /v3/api-docs
+
+password-manager:
+  jwtKey: ${JWT_TOKEN:default}
