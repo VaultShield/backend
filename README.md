@@ -14,6 +14,7 @@ Before you begin, ensure you have met the following requirements:
 - **Java JDK 17**: Make sure Java JDK 17 on your machine (you can check by running `java -version`).
 - **Maven**: You need Maven installed to handle dependencies and to build the project. Install it from [here](https://maven.apache.org/install.html).
 - **Docker**: You will need Docker to run the containers for the database and the application. Download it from [Docker's website](https://www.docker.com/get-started).
+- **Ports**: Make sure you have port 8080 **(API)** and 5432 **(POSTGRESQL)** not used by another resource
 
 ## Installation
 
@@ -36,6 +37,10 @@ $ ./start.sh
 ```bash
 $ ./start.ps1
 ```
+
+## Swagger Docs
+You can access the swagger to review also from the documentation, make sure to start the project first and not make any errors!
+- http://localhost:8080/swagger-ui/index.html#/
 
 ## Postman collections
 We have created a postman collections to test the api, just follow the steps to find it
