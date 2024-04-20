@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.vaultshield.passwordmanager.exceptions.NotFoundException;
 import com.vaultshield.passwordmanager.exceptions.SaveException;
 import com.vaultshield.passwordmanager.mapper.DtoAndEntityMapper;
-import com.vaultshield.passwordmanager.models.dto.Credentials;
 import com.vaultshield.passwordmanager.models.entities.CredentialsEntity;
 import com.vaultshield.passwordmanager.models.entities.PasswordEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
@@ -98,9 +97,11 @@ public class CredentialsServiceImpl implements CredentialsService {
     }
 
     @Override
-    public Credentials findOneCredential(CommonIdRequest request) {
-       CredentialsEntity entity = credentialsRepository.findById(request.getId()).get();
-       Credentials response = mapper.credentialsEntityToCredentialsDto(entity);
-        return response;
+    public CredentialsEntity findOneCredential(String id) throws NotFoundException {
+        Optional<CredentialsEntity> entity = credentialsRepository.findById(id);
+        if (!entity.isPresent()) {
+            throw new NotFoundException("No credentials found with ID: " + id);
+        }
+        return entity.get();
     }
 }
