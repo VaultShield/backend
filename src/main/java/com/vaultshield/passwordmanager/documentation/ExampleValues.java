@@ -15,6 +15,8 @@ public class ExampleValues {
 
     public static final String SOFT_DELETE_DATE = "null";
 
+    public static final String CRED_NOT_FOUND = "Credential not found";
+
     public static final String ERROR_NOT_FOUND = "User not found";
 
     public static final String ERROR_500 = "Internal Server Error";
@@ -38,4 +40,21 @@ public class ExampleValues {
     public static final String STATUS_400_USERNAME = "Username already exists";
 
     public static final String STATUS_400_EMAIL = "Email already exists";
+
+    public static final String ACCOUNT = "Twitter";
+
+    public static final String CRED_TITLE = "Social Media";
+
+    public static final String VALUE = "password123";
+
+    public static final String NOTE = "This is a note";
+
+    public static final String CRED_TYPE = "PASSWORD";
+
+    public static final String CRED_STATE = "ACTIVE";
+
+    public static final String CRED_FAV = "true";
+
+    public static final String CRED_GROUP = "null";
+
 }
