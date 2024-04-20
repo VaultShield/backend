@@ -18,13 +18,17 @@ Before you begin, ensure you have met the following requirements:
 
 ## Installation
 
-To install the project, follow these steps:
+to install the project, follow these steps:
 
 ```bash
 $ git clone https://github.com/VaultShield/backend.git
 ```
 ```bash
 $ cd /backend
+```
+to run the latest version available under development **(optional)**
+```bash
+$ git switch develop
 ```
 **Linux and macOS**:
 ```bash
