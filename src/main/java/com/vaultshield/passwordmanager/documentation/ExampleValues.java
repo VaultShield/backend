@@ -15,6 +15,8 @@ public class ExampleValues {
 
     public static final String SOFT_DELETE_DATE = "null";
 
+    public static final String CRED_NOT_FOUND = "Credential not found";
+
     public static final String ERROR_NOT_FOUND = "User not found";
 
     public static final String ERROR_500 = "Internal Server Error";
