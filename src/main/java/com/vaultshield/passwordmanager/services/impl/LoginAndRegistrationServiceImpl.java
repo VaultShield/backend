@@ -1,12 +1,19 @@
 package com.vaultshield.passwordmanager.services.impl;
 
+import java.util.Optional;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.vaultshield.passwordmanager.config.PasswordManagerProperties;
 import com.vaultshield.passwordmanager.mapper.DtoAndEntityMapper;
 import com.vaultshield.passwordmanager.models.dto.User;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
+import com.vaultshield.passwordmanager.models.request.ChangePasswordRequest;
 import com.vaultshield.passwordmanager.models.request.LoginRequest;
 import com.vaultshield.passwordmanager.models.request.RegisterRequest;
-import com.vaultshield.passwordmanager.models.request.ChangePasswordRequest;
 import com.vaultshield.passwordmanager.models.response.ChangePasswordResponse;
 import com.vaultshield.passwordmanager.models.response.LoginResponse;
 import com.vaultshield.passwordmanager.models.response.RegisterResponse;
@@ -15,13 +22,6 @@ import com.vaultshield.passwordmanager.services.LoginAndRegistrationService;
 import com.vaultshield.passwordmanager.services.utils.JsonWebToken;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.Optional;
-
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 
 
 @Service
@@ -66,7 +66,7 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
         }
 
         response.setId(userEntity.getId());
-        response.setStatus(HttpStatus.OK.value());
+        response.setStatus(HttpStatus.CREATED.value());
         response.setMessage(HttpStatus.OK.getReasonPhrase());
         response.setToken(token);
 
