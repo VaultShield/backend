@@ -14,7 +14,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      platform: linux/amd64
     depends_on:
       - postgres
     ports:
@@ -23,3 +22,19 @@ services:
     environment:
       JWT_TOKEN: "VAULTSHIELD_KEY"
       SPRING_PROFILES_ACTIVE: docker
+  
+  go-service:
+    build:
+      context: /go/src/import_export/src
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - "4000:4000"
+    restart: always
+    environment:
+      HOSTNAME: localhost
+      USER: postgres
+      PASSWORD: admin
+      DATABASE: db
+      PORT: 5432
