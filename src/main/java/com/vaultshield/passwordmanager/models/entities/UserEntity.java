@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Table(name="users", uniqueConstraints = {
@@ -28,6 +29,8 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String password;
+    
+    private List<String> seedPhrase;
 
     private Boolean active;
 

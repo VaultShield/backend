@@ -6,6 +6,8 @@ import com.vaultshield.passwordmanager.models.entities.CredentialsEntity;
 import com.vaultshield.passwordmanager.models.entities.PasswordEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
 import com.vaultshield.passwordmanager.repository.UserRepository;
+
+import org.hibernate.mapping.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,9 +29,10 @@ public class DtoAndEntityMapper {
         String password = userDto.getPassword();
         String email = userDto.getEmail();
         String username = userDto.getUsername();
+        var seedPhrase = userDto.getSeedPhrase();
+
         if (password == "" || email == "" || username == ""){
-            // TO DO error handler ?
-            throw new UnsupportedOperationException("Unimplemented method 'UserEntitiesToUserDto'");
+            new Error("none of the parameters can be empty");
         }
 
         UserEntity userEntity = new UserEntity();
@@ -37,6 +40,7 @@ public class DtoAndEntityMapper {
         userEntity.setUsername(username);
         userEntity.setPassword(password);
         userEntity.setActive(true);
+        userEntity.setSeedPhrase(seedPhrase);
         userEntity.setUpdateDate(LocalDateTime.now());
 
         return userEntity;

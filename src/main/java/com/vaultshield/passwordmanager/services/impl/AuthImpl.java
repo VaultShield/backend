@@ -19,6 +19,7 @@ import com.vaultshield.passwordmanager.models.response.LoginResponse;
 import com.vaultshield.passwordmanager.models.response.RegisterResponse;
 import com.vaultshield.passwordmanager.repository.LoginAndRegistrationRepository;
 import com.vaultshield.passwordmanager.services.LoginAndRegistrationService;
+import com.vaultshield.passwordmanager.services.recover.Recovery;
 import com.vaultshield.passwordmanager.services.utils.JsonWebToken;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationService {
+public class AuthImpl implements LoginAndRegistrationService {
 
     final private PasswordManagerProperties properties;
 
@@ -45,6 +46,7 @@ public class LoginAndRegistrationServiceImpl implements LoginAndRegistrationServ
       userDto.setUsername(user.getUsername());
       userDto.setEmail(user.getEmail());
       userDto.setPassword(bcrypt.encode(user.getPassword()));
+      userDto.setSeedPhrase(Recovery.generateSeedPhrase(15));
 
       userEntity = mapper.userDtoToUserEntity(userDto);
       try {

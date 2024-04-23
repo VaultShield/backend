@@ -21,7 +21,7 @@ import com.vaultshield.passwordmanager.models.response.ChangePasswordResponse;
 import com.vaultshield.passwordmanager.models.response.LoginResponse;
 import com.vaultshield.passwordmanager.models.response.RegisterResponse;
 import com.vaultshield.passwordmanager.models.response.VerifySessionResponse;
-import com.vaultshield.passwordmanager.services.impl.LoginAndRegistrationServiceImpl;
+import com.vaultshield.passwordmanager.services.impl.AuthImpl;
 import com.vaultshield.passwordmanager.services.utils.VerifySession;
 
 import io.swagger.v3.oas.annotations.Hidden;
@@ -39,7 +39,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
-    final private LoginAndRegistrationServiceImpl service;
+    final private AuthImpl service;
     final private PasswordManagerProperties properties;
 
     @Operation(summary = "User registration", description = "Register a new user")
@@ -68,25 +68,11 @@ public class AuthController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @Hidden
-    @GetMapping("/verifysession")
-    public ResponseEntity<?> verifySession(@RequestHeader("Authorization") String header){
-        VerifySession verifier = new VerifySession(properties);
-        VerifySessionResponse response = verifier.verifySession(header);
-        return ResponseEntity.status(response.getStatus()).body(response);
-    }
+    // @PostMapping("path")
+    // public String postMethodName(@RequestBody String entity) {
+    //     //TODO: process POST request
+        
+    //     return entity;
+    // }
     
-    // TEST!
-    @Hidden
-    @GetMapping("/dashboard")
-    public String dashboard(@RequestHeader String header) {
-        return new String();
-    }
-    
-    @Hidden
-    @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request){
-        ChangePasswordResponse response = service.changePassword(request);
-        return ResponseEntity.status(response.getStatus()).body(response);
-    }
 }
