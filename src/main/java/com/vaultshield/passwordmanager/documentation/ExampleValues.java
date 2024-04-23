@@ -43,11 +43,9 @@ public class ExampleValues {
 
     public static final String STATUS_400_EMAIL = "Email already exists";
 
-    public static final String ACCOUNT = "Twitter";
+    public static final String ACCOUNT = "johndoe@email.com";
 
-    public static final String CRED_TITLE = "Social Media";
-
-    public static final String VALUE = "password123";
+    public static final String CRED_TITLE = "Twitter";
 
     public static final String NOTE = "This is a note";
 
@@ -58,5 +56,7 @@ public class ExampleValues {
     public static final String CRED_FAV = "true";
 
     public static final String CRED_GROUP = "null";
+
+    public static final String PASS_ID = "899eef8f-71c7-43a6-a91f-85398cbc5bf4";
 
 }
