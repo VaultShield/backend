@@ -26,7 +26,10 @@ public class PasswordServiceImpl implements PasswordService {
         PasswordEntity passwordEntity = new PasswordEntity();
         passwordEntity.setTitle(request.getTitle());
         passwordEntity.setAccount(request.getAccount());
-        passwordEntity.setPassword(bcrypt.encode(request.getPassword()));
+        // TODO: Encriptar password antes de guardarla en la base de datos
+        // No vale con bcrypt ya que tenemos que poder desencriptarla y mostrarla.
+        // passwordEntity.setPassword(bcrypt.encode(request.getPassword()));
+        passwordEntity.setPassword(request.getPassword());
         passwordEntity.setNote(request.getNote());
 
         return passwordRepository.save(passwordEntity);
