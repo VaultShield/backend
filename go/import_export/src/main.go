@@ -9,13 +9,18 @@ import (
 )
 
 func main() {
-	db := repository.ConnectionDB()
-	db.Ping()
+
+	db, err := repository.ConnectionDB()
+	if err != nil {
+		panic(err)
+	}
+	repository.DB = db
+	defer db.Close()
 
 	app := fiber.New()
 	routers.Setup(app)
 
-	err := app.Listen(":8081")
+	err = app.Listen(":4000")
 	if err != nil {
 		log.Fatal(err)
 	}
