@@ -41,7 +41,7 @@ public class CredentialResponse {
     @Schema(description = "User ID", example = ExampleValues.ID)
     private String userId;
 
-    @Schema(description = "Password ID", example = ExampleValues.ID)
-    private String passwordId;
+    @Schema(description = "Password details")
+    private PasswordResponse password;
 
 }
