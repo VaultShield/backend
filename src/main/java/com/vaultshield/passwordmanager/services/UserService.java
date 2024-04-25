@@ -1,23 +1,37 @@
 package com.vaultshield.passwordmanager.services;
 
+import org.springframework.http.ResponseEntity;
+
+import com.vaultshield.passwordmanager.exceptions.ConflictException;
+import com.vaultshield.passwordmanager.exceptions.NotFoundException;
 import com.vaultshield.passwordmanager.exceptions.QueryError;
-import com.vaultshield.passwordmanager.exceptions.UserNotFoundException;
-import com.vaultshield.passwordmanager.exceptions.UserSaveException;
+import com.vaultshield.passwordmanager.exceptions.SaveException;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
+import com.vaultshield.passwordmanager.models.request.LoginRequest;
+import com.vaultshield.passwordmanager.models.request.RegisterRequest;
+import com.vaultshield.passwordmanager.models.request.TokenRefreshRequest;
 import com.vaultshield.passwordmanager.models.request.UserRequest;
+import com.vaultshield.passwordmanager.models.response.LoginResponse;
+import com.vaultshield.passwordmanager.models.response.RegisterResponse;
 
 public interface UserService {
 
-    UserEntity getUserById(String id) throws UserNotFoundException;
+    ResponseEntity<RegisterResponse> registerUser(RegisterRequest signUpRequest) throws ConflictException;
 
-    UserEntity changeUserData(UserRequest user, String userId) throws UserNotFoundException, UserSaveException;
+    ResponseEntity<LoginResponse> loginUser(LoginRequest loginRequest) throws NotFoundException;
 
-    UserEntity removeUser(String id) throws UserNotFoundException;
+    ResponseEntity<?> refreshtoken(TokenRefreshRequest request);
 
-    UserEntity getUserByEmail(String email) throws UserNotFoundException;
+    UserEntity getUserById(String id) throws NotFoundException;
 
-    UserEntity getUserByUsername(String username) throws UserNotFoundException;
+    UserEntity changeUserData(UserRequest user, String userId) throws NotFoundException, SaveException;
 
-    UserEntity searchUser(String by, String value) throws UserNotFoundException, QueryError;
+    UserEntity removeUser(String id) throws NotFoundException;
+
+    UserEntity getUserByEmail(String email) throws NotFoundException;
+
+    UserEntity getUserByUsername(String username) throws NotFoundException;
+
+    UserEntity searchUser(String by, String value) throws NotFoundException, QueryError;
 
 }
