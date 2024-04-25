@@ -27,13 +27,17 @@ public class ExampleValues {
 
     public static final String STATUS_409 = "409";
 
-    public static final String STATUS_409_MSG = "The email or username is already in use.";
+    public static final String STATUS_409_MSG = "Email/Username already exists.";
 
     public static final String ID_NULL = "null";
 
     public static final String LOGIN_MSG = "OK";
 
     public static final String TOKEN = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwZXBpdG8iLCJleHAiOjE3MTM1MzQ0NzB9.pJBFOO_fSvUF5DHjc3eAIeUdofORpdgkOjId5Iyb0vBX4RY7X9CdZuB0eCRtY9JVLUnzb6m88dVIRkpF9ZGRIQ";
+
+    public static final String EXPIRATION = "2024-04-24T22:45:10+02:00[CET]";
+
+    public static final String REFRESH_TOKEN = "d0014804-3852-4326-a1b6-08aee37aeff7";
 
     public static final String STATUS_401 = "401";
 
