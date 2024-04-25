@@ -4,7 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class Recovery {
+
+	private static final BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+
     private static final String[] WORDS = {
         "apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon",
 	    "mango", "nectarine", "orange", "papaya", "quince", "raspberry", "strawberry", "tangerine", "ugli", "vine",
@@ -23,5 +31,21 @@ public class Recovery {
 		List<String> words = new ArrayList<>(List.of(WORDS));
 		Collections.shuffle(words);
 		return words.subList(0, length);
+	}
+
+	public static String hashSeedPhrase(List<String> seedPhrase){
+		String combinedPhrase = String.join(";", seedPhrase);
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		System.out.println(combinedPhrase);
+		return encoder.encode(combinedPhrase);
+	}
+
+	public static Boolean compareHash(List<String> seedPhrase, String savedSeedPhrase){
+		String combinedPhrase = String.join(";", seedPhrase);
+			if (bcrypt.matches(combinedPhrase, savedSeedPhrase)){
+				return true;
+			}
+
+		return false;
 	}
 }

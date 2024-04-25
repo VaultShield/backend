@@ -1,5 +1,7 @@
 package com.vaultshield.passwordmanager.models.response;
 
+import java.util.List;
+
 import com.vaultshield.passwordmanager.documentation.ExampleValues;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,4 +23,5 @@ public class RegisterResponse {
     @Schema(description = "Login message", example = ExampleValues.LOGIN_MSG)
     private String message;
     private String token;
+    private List<String> seedPhrase;
 }

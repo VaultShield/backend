@@ -30,8 +30,6 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
     
-    private List<String> seedPhrase;
-
     private Boolean active;
 
     private LocalDateTime updateDate;

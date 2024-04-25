@@ -1,5 +1,6 @@
 package com.vaultshield.passwordmanager.services.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.vaultshield.passwordmanager.config.PasswordManagerProperties;
 import com.vaultshield.passwordmanager.mapper.DtoAndEntityMapper;
 import com.vaultshield.passwordmanager.models.dto.User;
+import com.vaultshield.passwordmanager.models.entities.SeedPhraseEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
 import com.vaultshield.passwordmanager.models.request.ChangePasswordRequest;
 import com.vaultshield.passwordmanager.models.request.LoginRequest;
@@ -18,6 +20,7 @@ import com.vaultshield.passwordmanager.models.response.ChangePasswordResponse;
 import com.vaultshield.passwordmanager.models.response.LoginResponse;
 import com.vaultshield.passwordmanager.models.response.RegisterResponse;
 import com.vaultshield.passwordmanager.repository.LoginAndRegistrationRepository;
+import com.vaultshield.passwordmanager.repository.SeedPhraseRepository;
 import com.vaultshield.passwordmanager.services.LoginAndRegistrationService;
 import com.vaultshield.passwordmanager.services.recover.Recovery;
 import com.vaultshield.passwordmanager.services.utils.JsonWebToken;
@@ -31,14 +34,16 @@ public class AuthImpl implements LoginAndRegistrationService {
 
     final private PasswordManagerProperties properties;
 
-    public String token;
+    private String token;
     final private LoginAndRegistrationRepository repository;
+    final private SeedPhraseRepository seedPhraseRepository;
     final private DtoAndEntityMapper mapper;
     final private BCryptPasswordEncoder bcrypt;
 
     @Override
     public RegisterResponse registerUser(RegisterRequest user) {
       UserEntity userEntity = new UserEntity();
+      SeedPhraseEntity seedPhraseEntity = new SeedPhraseEntity();
       User userDto = new User();
       RegisterResponse response = new RegisterResponse();
       JsonWebToken jwt = new JsonWebToken(properties);
@@ -46,11 +51,17 @@ public class AuthImpl implements LoginAndRegistrationService {
       userDto.setUsername(user.getUsername());
       userDto.setEmail(user.getEmail());
       userDto.setPassword(bcrypt.encode(user.getPassword()));
-      userDto.setSeedPhrase(Recovery.generateSeedPhrase(15));
+
+      List<String> seedPhrase = Recovery.generateSeedPhrase(15);
+      String seedPhraseEncrypted = Recovery.hashSeedPhrase(seedPhrase);
 
       userEntity = mapper.userDtoToUserEntity(userDto);
       try {
-        repository.save(userEntity);
+       UserEntity userEntitySaved = repository.save(userEntity);
+
+        seedPhraseEntity.setUserId(userEntitySaved.getId());
+        seedPhraseEntity.setPhrase(seedPhraseEncrypted);
+        seedPhraseRepository.save(seedPhraseEntity);
 
         try {
           token = jwt.generateToken(user.getUsername());
@@ -59,28 +70,33 @@ public class AuthImpl implements LoginAndRegistrationService {
             response.setToken(null);
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-            throw new Error();
           }
+
+          response.setId(userEntity.getId());
+          response.setStatus(HttpStatus.CREATED.value());
+          response.setMessage(HttpStatus.CREATED.getReasonPhrase());
+          response.setToken(token);
+          response.setSeedPhrase(seedPhrase);
+
         } catch (Exception e){
           response.setToken(null);
           response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
           response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
         }
 
-        response.setId(userEntity.getId());
-        response.setStatus(HttpStatus.CREATED.value());
-        response.setMessage(HttpStatus.OK.getReasonPhrase());
-        response.setToken(token);
-
       } catch (DataIntegrityViolationException e) {
 
         response.setId(null);
         response.setStatus(HttpStatus.CONFLICT.value());
         response.setMessage("The email or username is already in use.");
+
+        System.out.println(e);
+
       } catch (Exception e) {
 
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.setMessage("Internal server error occurred.");
+
     }
 
       return response;

@@ -1,7 +1,5 @@
 package com.vaultshield.passwordmanager.models.dto;
 
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,8 +11,6 @@ public class User {
      private String email;
 
      private String password;
-
-     private List<String> seedPhrase;
 
      private String organization;
 

@@ -29,7 +29,6 @@ public class DtoAndEntityMapper {
         String password = userDto.getPassword();
         String email = userDto.getEmail();
         String username = userDto.getUsername();
-        var seedPhrase = userDto.getSeedPhrase();
 
         if (password == "" || email == "" || username == ""){
             new Error("none of the parameters can be empty");
@@ -40,7 +39,6 @@ public class DtoAndEntityMapper {
         userEntity.setUsername(username);
         userEntity.setPassword(password);
         userEntity.setActive(true);
-        userEntity.setSeedPhrase(seedPhrase);
         userEntity.setUpdateDate(LocalDateTime.now());
 
         return userEntity;
