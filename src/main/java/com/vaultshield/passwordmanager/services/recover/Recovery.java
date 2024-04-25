@@ -36,7 +36,6 @@ public class Recovery {
 	public static String hashSeedPhrase(List<String> seedPhrase){
 		String combinedPhrase = String.join(";", seedPhrase);
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		System.out.println(combinedPhrase);
 		return encoder.encode(combinedPhrase);
 	}
 

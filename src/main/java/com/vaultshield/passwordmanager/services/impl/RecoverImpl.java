@@ -3,13 +3,14 @@ package com.vaultshield.passwordmanager.services.impl;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.vaultshield.passwordmanager.config.PasswordManagerProperties;
 import com.vaultshield.passwordmanager.models.entities.SeedPhraseEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
+import com.vaultshield.passwordmanager.models.request.RecoverNewPasswordRequest;
 import com.vaultshield.passwordmanager.models.request.RecoverRequest;
+import com.vaultshield.passwordmanager.models.response.RecoverNewPasswordResponse;
 import com.vaultshield.passwordmanager.models.response.RecoverResponse;
 import com.vaultshield.passwordmanager.repository.LoginAndRegistrationRepository;
 import com.vaultshield.passwordmanager.repository.SeedPhraseRepository;
@@ -28,6 +29,7 @@ public class RecoverImpl implements IRecover {
     final private LoginAndRegistrationRepository userRepository;
     final private SeedPhraseRepository seedPhraseRepository;
     private String token;
+    private String subject;
 
     @Override
     public RecoverResponse newRecover(RecoverRequest request) {
@@ -58,6 +60,32 @@ public class RecoverImpl implements IRecover {
             response.setToken(token);
             response.setMessage(HttpStatus.OK.getReasonPhrase());
             response.setStatus(HttpStatus.OK.value());
+        }
+
+        return response;
+    }
+
+    @Override
+    public RecoverNewPasswordResponse newPasswordRecover(RecoverNewPasswordRequest request) {
+        JsonWebToken jwt = new JsonWebToken(properties);
+
+        RecoverNewPasswordResponse response = new RecoverNewPasswordResponse();
+        if (request.getToken().isEmpty()){
+            response.setMessage(HttpStatus.BAD_REQUEST.getReasonPhrase());
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+        }
+
+        try {
+            if (jwt.validateRecoverToken(token)){
+                // to do: change password
+
+                response.setMessage(HttpStatus.OK.getReasonPhrase());
+                response.setStatus(HttpStatus.OK.value());
+            }
+        } catch (Exception e) {
+            response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            System.out.println(e);
         }
 
         return response;

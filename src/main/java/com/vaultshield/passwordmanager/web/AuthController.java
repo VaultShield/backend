@@ -16,12 +16,14 @@ import com.vaultshield.passwordmanager.config.PasswordManagerProperties;
 
 import com.vaultshield.passwordmanager.models.request.ChangePasswordRequest;
 import com.vaultshield.passwordmanager.models.request.LoginRequest;
+import com.vaultshield.passwordmanager.models.request.RecoverRequest;
 import com.vaultshield.passwordmanager.models.request.RegisterRequest;
 import com.vaultshield.passwordmanager.models.response.ChangePasswordResponse;
 import com.vaultshield.passwordmanager.models.response.LoginResponse;
 import com.vaultshield.passwordmanager.models.response.RegisterResponse;
 import com.vaultshield.passwordmanager.models.response.VerifySessionResponse;
 import com.vaultshield.passwordmanager.services.impl.AuthImpl;
+import com.vaultshield.passwordmanager.services.impl.RecoverImpl;
 import com.vaultshield.passwordmanager.services.utils.VerifySession;
 
 import io.swagger.v3.oas.annotations.Hidden;
@@ -67,12 +69,4 @@ public class AuthController {
         LoginResponse response = service.login(request);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-
-    // @PostMapping("path")
-    // public String postMethodName(@RequestBody String entity) {
-    //     //TODO: process POST request
-        
-    //     return entity;
-    // }
-    
 }
