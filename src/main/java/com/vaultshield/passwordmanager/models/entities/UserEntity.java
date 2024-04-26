@@ -1,24 +1,34 @@
 package com.vaultshield.passwordmanager.models.entities;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
-@Table(name="users", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"username"}),
-    @UniqueConstraint(columnNames = {"email"})
-})
+import com.vaultshield.passwordmanager.security.model.RefreshTokenEntity;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Getter
-@Setter
+@Table(name = "users")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false)
-    String id;
+    private String id;
 
     @Column(nullable = false)
     private String username;
@@ -33,8 +43,12 @@ public class UserEntity {
 
     private LocalDateTime updateDate;
 
-    @OneToMany(mappedBy="user",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<CredentialsEntity> credentials;
     
     private LocalDateTime softDeleteDate;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<RefreshTokenEntity> refreshTokens;
+
 }
