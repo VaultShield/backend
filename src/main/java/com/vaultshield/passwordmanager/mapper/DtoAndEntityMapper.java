@@ -3,11 +3,9 @@ package com.vaultshield.passwordmanager.mapper;
 import com.vaultshield.passwordmanager.models.dto.Credentials;
 import com.vaultshield.passwordmanager.models.dto.User;
 import com.vaultshield.passwordmanager.models.entities.CredentialsEntity;
-import com.vaultshield.passwordmanager.models.entities.PasswordEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
 import com.vaultshield.passwordmanager.repository.UserRepository;
 
-import org.hibernate.mapping.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
