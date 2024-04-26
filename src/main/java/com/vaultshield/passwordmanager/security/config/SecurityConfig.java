@@ -1,4 +1,4 @@
-package com.vaultshield.passwordmanager.services.security;
+package com.vaultshield.passwordmanager.security.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,9 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.vaultshield.passwordmanager.security.jwt.JwtAuthEntryPoint;
+import com.vaultshield.passwordmanager.security.jwt.JwtRequestFilter;
 import com.vaultshield.passwordmanager.services.impl.UserDetailsServiceImpl;
-import com.vaultshield.passwordmanager.services.security.jwt.JwtAuthEntryPoint;
-import com.vaultshield.passwordmanager.services.security.jwt.JwtRequestFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -53,7 +53,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.disable())
-                .csrf(csrf -> csrf.disable()) // CSRF !!
+                .csrf(csrf -> csrf.disable())
                 .exceptionHandling(handling -> handling.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
