@@ -18,6 +18,9 @@ public class LoginResponse {
     @Schema(description = "Status code", example = ExampleValues.STATUS_200)
     private int status;
 
-    @Schema(description = "Login message", example = ExampleValues.LOGIN_MSG)
-    private String message;
+    @Schema(description = "Token Expiration", example = ExampleValues.EXPIRATION)
+    private String expiration;
+
+    @Schema(description = "User")
+    private UserResponse user;
 }  

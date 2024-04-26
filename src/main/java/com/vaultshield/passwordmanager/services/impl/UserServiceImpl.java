@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.vaultshield.passwordmanager.exceptions.QueryError;
 import com.vaultshield.passwordmanager.exceptions.UserNotFoundException;
 import com.vaultshield.passwordmanager.exceptions.UserSaveException;
+import com.vaultshield.passwordmanager.mapper.UserMapper;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
 import com.vaultshield.passwordmanager.models.request.UserRequest;
 import com.vaultshield.passwordmanager.repository.UserRepository;
@@ -20,6 +21,70 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
+    public ResponseEntity<RegisterResponse> registerUser(RegisterRequest signUpRequest) throws ConflictException {
+
+        if (userRepository.existsByUsername(signUpRequest.getUsername()))
+            throw new ConflictException(ErrorMessages.ERROR_409_USERNAME);
+
+        if (userRepository.existsByEmail(signUpRequest.getEmail()))
+            throw new ConflictException(ErrorMessages.ERROR_409_EMAIL);
+
+        UserEntity newUser = new UserEntity();
+        newUser.setEmail(signUpRequest.getEmail());
+        newUser.setUsername(signUpRequest.getUsername());
+        newUser.setPassword(encoder.encode(signUpRequest.getPassword()));
+        newUser.setActive(true);
+        userRepository.save(newUser);
+        return new ResponseEntity<>(new RegisterResponse(newUser.getId()), HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<LoginResponse> loginUser(LoginRequest loginRequest) throws NotFoundException {
+        if (!userRepository.existsByUsername(loginRequest.getUsername())) {
+            throw new NotFoundException(ErrorMessages.ERROR_404_USERNAME);
+        }
+
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginRequest.getUsername(), loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtTokenUtil.generateJwtToken(authentication);
+        Instant expiration = jwtTokenUtil.extractTokenExpiration(jwt);
+        ZoneId cetZone = ZoneId.of(ZONE_ID);
+        ZonedDateTime expirationCET = ZonedDateTime.ofInstant(expiration, cetZone);
+
+        UserEntity user = userRepository.findByUsername(loginRequest.getUsername()).get();
+        RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(user.getId());
+        return new ResponseEntity<>(
+                new LoginResponse(jwt, refreshToken.getToken(), expirationCET.toString(),
+                        UserMapper.toUserResponse(user)),
+                HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> refreshtoken(TokenRefreshRequest request) {
+
+        String requestRefreshToken = request.getRefreshToken();
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshTokenEntity::getUser)
+                .map(user -> {
+                    String token = jwtTokenUtil.generateTokenFromUsername(user.getUsername());
+                    Instant expiration = jwtTokenUtil.extractTokenExpiration(token);
+                    ZoneId cetZone = ZoneId.of(ZONE_ID);
+                    ZonedDateTime expirationCET = ZonedDateTime.ofInstant(expiration, cetZone);
+
+                    RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(user.getId());
+
+                    return ResponseEntity
+                            .ok(new TokenRefreshResponse(token, refreshToken.getToken(), expirationCET.toString()));
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                        ErrorMessages.TOKEN_NOT_EXIST));
+    }
+
+    @Override
+    public UserEntity getUserById(String id) throws NotFoundException {
     public UserEntity getUserById(String id) throws UserNotFoundException {
         Optional<UserEntity> user = userRepository.findById(id);
         if (!user.isPresent())
