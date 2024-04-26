@@ -22,3 +22,11 @@ services:
     environment:
       JWT_TOKEN: "VAULTSHIELD_KEY"
       SPRING_PROFILES_ACTIVE: docker
+
+  encrytion-service:
+    build:
+      context: /encryption-app/encryption/encryption
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    restart: always

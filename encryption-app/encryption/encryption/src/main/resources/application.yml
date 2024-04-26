@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: encryption
+
+
+encryption:
+  secret-key: ${SECRET:5183C14826919169}
+  salt: ${SALT:5183C14826919169}
+
+server:
+  port : 8082
+
+springfox:
+  documentation:
+    swagger-ui:
+      enabled: true
+    api-docs:
+      path: /v3/api-docs
