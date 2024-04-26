@@ -14,7 +14,6 @@ import com.vaultshield.passwordmanager.models.entities.PasswordEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
 import com.vaultshield.passwordmanager.models.request.CredentialRequest;
 import com.vaultshield.passwordmanager.repository.CredentialsRepository;
-import com.vaultshield.passwordmanager.repository.LoginAndRegistrationRepository;
 import com.vaultshield.passwordmanager.repository.UserRepository;
 import com.vaultshield.passwordmanager.services.CredentialsService;
 import com.vaultshield.passwordmanager.utils.ErrorMessages;
@@ -24,9 +23,6 @@ public class CredentialsServiceImpl implements CredentialsService {
 
     @Autowired
     CredentialsRepository credentialsRepository;
-
-    @Autowired
-    LoginAndRegistrationRepository loginAndRegistrationRepository;
 
     @Autowired
     UserRepository userRepository;

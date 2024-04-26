@@ -14,6 +14,8 @@ public class ErrorMessages {
 
     public static final String USER_NOT_FOUND_BY_ID = "User not found with ID: ";
 
+    public static final String USER_NOT_FOUND_BY_USERNAME = "No user found with username: ";
+
     public static final String CRED_NOT_FOUND_BY_ID = "No credentials found with ID: ";
 
     public static final String CRED_NOT_FOUND_BY_USERID = "No credentials found for userId: ";
