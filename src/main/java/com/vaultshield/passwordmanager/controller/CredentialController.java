@@ -1,4 +1,4 @@
-package com.vaultshield.passwordmanager.web;
+package com.vaultshield.passwordmanager.controller;
 
 import java.util.List;
 
@@ -88,6 +88,5 @@ public class CredentialController {
     private CredentialResponse findCredential(@PathVariable String id) {
         return CredentialMapper.toCredentialResponse(service.findOneCredential(id));
     }
-
 
 }

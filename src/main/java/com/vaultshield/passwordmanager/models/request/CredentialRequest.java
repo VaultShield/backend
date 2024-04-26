@@ -5,14 +5,12 @@ import com.vaultshield.passwordmanager.models.dto.CredentialType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Data
 @AllArgsConstructor
-@Getter
 @Setter
+@Getter
 public class CredentialRequest {
     @Schema(example = ExampleValues.ID)
     private String userId;
