@@ -1,4 +1,4 @@
-package com.vaultshield.passwordmanager.models.response;
+package com.vaultshield.passwordmanager.security.model.response;
 
 import com.vaultshield.passwordmanager.documentation.ExampleValues;
 
