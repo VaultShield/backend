@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
 import com.vaultshield.passwordmanager.repository.UserRepository;
+import com.vaultshield.passwordmanager.utils.ErrorMessages;
 
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -20,7 +21,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(
-                        () -> new UsernameNotFoundException("The user with username: " + username + " was not found."));
+                        () -> new UsernameNotFoundException(
+                                ErrorMessages.USER_NOT_FOUND_BY_USERNAME + username));
 
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
                 new ArrayList<>());
