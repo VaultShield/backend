@@ -12,6 +12,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.JWTVerifier;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -98,6 +104,41 @@ public class JwtTokenUtil {
 
         Date expirationDate = claimsJws.getBody().getExpiration();
         return expirationDate.toInstant();
+    }
+
+        public String generateRecoverToken(String id) {
+        try {
+
+            Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+            Instant expiration = issuedAt.plus(30, ChronoUnit.MINUTES);
+
+            return JWT.create()
+                .withSubject(id)
+                .withClaim("type", "auth")
+                .withExpiresAt(expiration)
+                .sign(Algorithm.HMAC512(jwtSecret));
+        } catch (Exception e) {
+            System.out.println("error by error generating token: " + e.getMessage());
+            throw new IllegalStateException("Internal server error");
+        }
+    }
+
+    public String validateRecoverToken(String token){
+        JWTVerifier verifier = JWT.require(Algorithm.HMAC512(jwtSecret)).build();
+        try {
+            token = token.substring(7);
+            DecodedJWT jwt = verifier.verify(token);
+            Claim claim = jwt.getClaim("type");
+            String type = claim.asString();
+
+            if (type.equals("auth")) {
+                return jwt.getSubject();
+            }
+            return null;
+        } catch (Exception e) {
+            System.out.println("error by error generating token: " + e.getMessage());
+            throw new IllegalStateException("Internal server error");
+        }
     }
 
 }
