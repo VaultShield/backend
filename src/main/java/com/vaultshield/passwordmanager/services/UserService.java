@@ -9,10 +9,10 @@ import com.vaultshield.passwordmanager.exceptions.SaveException;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
 import com.vaultshield.passwordmanager.models.request.LoginRequest;
 import com.vaultshield.passwordmanager.models.request.RegisterRequest;
-import com.vaultshield.passwordmanager.models.request.TokenRefreshRequest;
 import com.vaultshield.passwordmanager.models.request.UserRequest;
 import com.vaultshield.passwordmanager.models.response.LoginResponse;
 import com.vaultshield.passwordmanager.models.response.RegisterResponse;
+import com.vaultshield.passwordmanager.security.model.request.TokenRefreshRequest;
 
 public interface UserService {
 
