@@ -20,6 +20,7 @@ import com.vaultshield.passwordmanager.exceptions.NotFoundException;
 import com.vaultshield.passwordmanager.exceptions.QueryError;
 import com.vaultshield.passwordmanager.exceptions.SaveException;
 import com.vaultshield.passwordmanager.exceptions.TokenRefreshException;
+import com.vaultshield.passwordmanager.mapper.UserMapper;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
 import com.vaultshield.passwordmanager.models.request.LoginRequest;
 import com.vaultshield.passwordmanager.models.request.RegisterRequest;
@@ -90,8 +91,9 @@ public class UserServiceImpl implements UserService {
 
         UserEntity user = userRepository.findByUsername(loginRequest.getUsername()).get();
         RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(user.getId());
-
-        return new ResponseEntity<>(new LoginResponse(jwt, refreshToken.getToken(), expirationCET.toString()),
+        return new ResponseEntity<>(
+                new LoginResponse(jwt, refreshToken.getToken(), expirationCET.toString(),
+                        UserMapper.toUserResponse(user)),
                 HttpStatus.OK);
     }
 
