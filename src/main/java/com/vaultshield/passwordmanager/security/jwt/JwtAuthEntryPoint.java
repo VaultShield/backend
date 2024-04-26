@@ -1,4 +1,4 @@
-package com.vaultshield.passwordmanager.services.security.jwt;
+package com.vaultshield.passwordmanager.security.jwt;
 
 import java.io.IOException;
 
@@ -28,7 +28,6 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
             AuthenticationException authException) throws IOException, ServletException {
 
         log.error("Unauthorized error: {}", authException.getMessage());
-
         ErrorResponse errorResponse = new ErrorResponse(ErrorMessages.BAD_CREDENTIALS);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

@@ -1,4 +1,4 @@
-package com.vaultshield.passwordmanager.services.security.jwt;
+package com.vaultshield.passwordmanager.security.jwt;
 
 import java.io.IOException;
 
