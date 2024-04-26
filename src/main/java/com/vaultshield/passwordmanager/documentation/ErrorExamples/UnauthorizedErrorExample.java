@@ -8,12 +8,6 @@ import lombok.Data;
 @Data
 public class UnauthorizedErrorExample {
 
-    @Schema(description = "User ID", example = ExampleValues.ID_NULL)
-    private String id;
-
-    @Schema(description = "Status code", example = ExampleValues.STATUS_401)
-    private int status;
-
     @Schema(description = "Login message", example = ExampleValues.STATUS_401_MSG)
     private String message;
 }
