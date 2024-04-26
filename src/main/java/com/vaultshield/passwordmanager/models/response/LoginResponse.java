@@ -22,4 +22,7 @@ public class LoginResponse {
 
     @Schema(description = "Token Expiration", example = ExampleValues.EXPIRATION)
     private String expiration;
+
+    @Schema(description = "User")
+    private UserResponse user;
 }  
