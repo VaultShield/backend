@@ -58,7 +58,7 @@ public class JsonWebToken {
         }
     }
 
-    public Boolean validateRecoverToken(String token){
+    public String validateRecoverToken(String token){
         JWTVerifier verifier = JWT.require(Algorithm.HMAC512(properties.getJwtKey())).build();
         try {
             token = token.substring(7);
@@ -66,8 +66,8 @@ public class JsonWebToken {
             Claim claim = jwt.getClaim("type");
             String type = claim.asString();
 
-            if (type == "auth") {
-                return true;
+            if (type.equals("auth")) {
+                return jwt.getSubject();
             }
             return null;
         } catch (Exception e) {

@@ -7,5 +7,5 @@ import com.vaultshield.passwordmanager.models.response.RecoverResponse;
 
 public interface IRecover {
     RecoverResponse newRecover(RecoverRequest request);
-    RecoverNewPasswordResponse newPasswordRecover(RecoverNewPasswordRequest request);
+    RecoverNewPasswordResponse newPasswordRecover(RecoverNewPasswordRequest request, String header);
 }

@@ -3,9 +3,11 @@ package com.vaultshield.passwordmanager.services.impl;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.vaultshield.passwordmanager.config.PasswordManagerProperties;
+import com.vaultshield.passwordmanager.models.dto.User;
 import com.vaultshield.passwordmanager.models.entities.SeedPhraseEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
 import com.vaultshield.passwordmanager.models.request.RecoverNewPasswordRequest;
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class RecoverImpl implements IRecover {
 
     final private PasswordManagerProperties properties;
+    final private BCryptPasswordEncoder bcrypt;
 
     final private LoginAndRegistrationRepository userRepository;
     final private SeedPhraseRepository seedPhraseRepository;
@@ -66,22 +69,30 @@ public class RecoverImpl implements IRecover {
     }
 
     @Override
-    public RecoverNewPasswordResponse newPasswordRecover(RecoverNewPasswordRequest request) {
+    public RecoverNewPasswordResponse newPasswordRecover(RecoverNewPasswordRequest request, String header) {
         JsonWebToken jwt = new JsonWebToken(properties);
+        Optional<UserEntity> userEntity;
 
         RecoverNewPasswordResponse response = new RecoverNewPasswordResponse();
-        if (request.getToken().isEmpty()){
+        if (header.isEmpty()){
             response.setMessage(HttpStatus.BAD_REQUEST.getReasonPhrase());
             response.setStatus(HttpStatus.BAD_REQUEST.value());
         }
 
         try {
-            if (jwt.validateRecoverToken(token)){
-                // to do: change password
+            subject = jwt.validateRecoverToken(header);
 
-                response.setMessage(HttpStatus.OK.getReasonPhrase());
-                response.setStatus(HttpStatus.OK.value());
-            }
+            System.out.println(subject);
+            userEntity = userRepository.findById(subject);
+            UserEntity newUserEntity = userEntity.get();
+
+            String passwordHashed = bcrypt.encode(request.getNewPassword());
+            newUserEntity.setPassword(passwordHashed);
+
+            newUserEntity = userRepository.save(newUserEntity);
+
+            response.setMessage(HttpStatus.OK.getReasonPhrase());
+            response.setStatus(HttpStatus.OK.value());
         } catch (Exception e) {
             response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());

@@ -9,5 +9,4 @@ import lombok.Setter;
 @Setter
 public class RecoverNewPasswordRequest {
     String newPassword;
-    String token;
 }
