@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.vaultshield.passwordmanager.exceptions.NotFoundException;
 import com.vaultshield.passwordmanager.exceptions.SaveException;
-import com.vaultshield.passwordmanager.mapper.DtoAndEntityMapper;
 import com.vaultshield.passwordmanager.models.entities.CredentialsEntity;
 import com.vaultshield.passwordmanager.models.entities.PasswordEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
@@ -18,6 +17,7 @@ import com.vaultshield.passwordmanager.repository.CredentialsRepository;
 import com.vaultshield.passwordmanager.repository.LoginAndRegistrationRepository;
 import com.vaultshield.passwordmanager.repository.UserRepository;
 import com.vaultshield.passwordmanager.services.CredentialsService;
+import com.vaultshield.passwordmanager.utils.ErrorMessages;
 
 @Service
 public class CredentialsServiceImpl implements CredentialsService {
@@ -31,8 +31,6 @@ public class CredentialsServiceImpl implements CredentialsService {
     @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    DtoAndEntityMapper mapper;
 
     @Autowired
     PasswordServiceImpl passwordService;
@@ -45,7 +43,7 @@ public class CredentialsServiceImpl implements CredentialsService {
 
         UserEntity userEntity = userRepository.findById(request.getUserId()).orElse(null);
         if (userEntity == null) {
-            throw new SaveException("User not found with ID: " + request.getUserId());
+            throw new SaveException(ErrorMessages.USER_NOT_FOUND_BY_ID + request.getUserId());
         }
         entity.setUser(userEntity);
 
@@ -65,7 +63,7 @@ public class CredentialsServiceImpl implements CredentialsService {
             throws SaveException, NotFoundException {
         Optional<CredentialsEntity> entityToUpdate = credentialsRepository.findById(id);
         if (!entityToUpdate.isPresent()) {
-            throw new NotFoundException("No credentials found with ID: " + id);
+            throw new NotFoundException(ErrorMessages.CRED_NOT_FOUND_BY_ID + id);
         }
         CredentialsEntity credentialToUpdate = entityToUpdate.get();
         if (request.getPassword() != null) {
@@ -89,7 +87,7 @@ public class CredentialsServiceImpl implements CredentialsService {
     public CredentialsEntity deleteCredential(String id) throws NotFoundException {
         Optional<CredentialsEntity> entityToUpdate = credentialsRepository.findById(id);
         if (!entityToUpdate.isPresent()) {
-            throw new NotFoundException("No credentials found with ID: " + id);
+            throw new NotFoundException(ErrorMessages.CRED_NOT_FOUND_BY_ID + id);
         }
         passwordService.deletePassword(entityToUpdate.get().getPassword().getId());
         credentialsRepository.deleteById(id);
@@ -100,7 +98,7 @@ public class CredentialsServiceImpl implements CredentialsService {
     public List<CredentialsEntity> findAllCredentials(String userId) throws NotFoundException {
         List<CredentialsEntity> credentialsEntities = credentialsRepository.findCredentialsEntityByUserId(userId).get();
         if (credentialsEntities.isEmpty()) {
-            throw new NotFoundException("No credentials found for user: " + userId);
+            throw new NotFoundException(ErrorMessages.CRED_NOT_FOUND_BY_USERID + userId);
         }
         return credentialsEntities;
     }
@@ -109,7 +107,7 @@ public class CredentialsServiceImpl implements CredentialsService {
     public CredentialsEntity findOneCredential(String id) throws NotFoundException {
         Optional<CredentialsEntity> entity = credentialsRepository.findById(id);
         if (!entity.isPresent()) {
-            throw new NotFoundException("No credentials found with ID: " + id);
+            throw new NotFoundException(ErrorMessages.CRED_NOT_FOUND_BY_ID + id);
         }
         return entity.get();
     }
