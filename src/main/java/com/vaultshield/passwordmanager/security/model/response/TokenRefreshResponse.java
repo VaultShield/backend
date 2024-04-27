@@ -1,4 +1,4 @@
-package com.vaultshield.passwordmanager.models.response;
+package com.vaultshield.passwordmanager.security.model.response;
 
 import com.vaultshield.passwordmanager.documentation.ExampleValues;
 
@@ -10,9 +10,9 @@ import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Getter
-public class LoginResponse {
+@Setter
+public class TokenRefreshResponse {
 
     @Schema(description = "User Token", example = ExampleValues.TOKEN)
     private String token;
@@ -20,9 +20,15 @@ public class LoginResponse {
     @Schema(description = "Refresh Token", example = ExampleValues.REFRESH_TOKEN)
     private String refreshToken;
 
+    @Schema(description = "Token Type", example = ExampleValues.TOKEN_TYPE)
+    private String tokenType = "Bearer";
+
     @Schema(description = "Token Expiration", example = ExampleValues.EXPIRATION)
     private String expiration;
 
-    @Schema(description = "User")
-    private UserResponse user;
-}  
+    public TokenRefreshResponse(String token, String refreshToken, String expiration) {
+        this.token = token;
+        this.refreshToken = refreshToken;
+        this.expiration = expiration;
+    }
+}

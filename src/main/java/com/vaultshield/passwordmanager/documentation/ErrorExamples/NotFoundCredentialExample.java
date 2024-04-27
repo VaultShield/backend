@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-public class UnauthorizedErrorExample {
+public class NotFoundCredentialExample {
 
-    @Schema(description = "Login message", example = ExampleValues.STATUS_401_MSG)
+    @Schema(description = "Error message", example = ExampleValues.CRED_NOT_FOUND)
     private String message;
 }
