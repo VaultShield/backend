@@ -5,7 +5,7 @@ import (
 
 	"github.com/VaultShield/repository"
 	"github.com/VaultShield/routers"
-	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {

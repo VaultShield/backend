@@ -6,14 +6,15 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/VaultShield/handlers/error_handler"
 	"github.com/VaultShield/models/request"
 	"github.com/VaultShield/models/response"
 	"github.com/VaultShield/services"
-	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v2"
 )
 
 func ToExportHandler() fiber.Handler {
-	return func(c fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
 		body := c.Body()
 		var rqst request.ExportationRequest
 
@@ -28,6 +29,14 @@ func ToExportHandler() fiber.Handler {
 
 		dataByte, err := services.ToJSONExport(rqst)
 		if err != nil {
+			if err == error_handler.Err_NOT_FOUND {
+				return c.Status(fiber.StatusNotFound).JSON(response.StandardHttpResponse{
+					Message: "this user does not have passwords",
+					Status:  fiber.StatusNotFound,
+					Data:    nil,
+				})
+			}
+
 			return c.Status(fiber.StatusInternalServerError).JSON(response.StandardHttpResponse{
 				Message: "Error generating export",
 				Status:  fiber.StatusInternalServerError,
