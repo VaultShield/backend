@@ -21,10 +21,6 @@ public class TokenValidator {
 
     @GetMapping("/validate")
     public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
-        if (token.isEmpty()){
-            return ResponseEntity.badRequest().build();
-        }
-
         if (jwt.validateJwtToken(token)){
             return ResponseEntity.ok().build();
         }else {
