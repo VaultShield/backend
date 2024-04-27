@@ -32,7 +32,7 @@ func ToJSONExport(rqst request.ExportationRequest) ([]byte, error) {
         			WHERE u.username = $1 AND u.active = true;
     					`
 
-	rows, err := tx.Query(query, rqst.Account)
+	rows, err := tx.Query(query, rqst.Username)
 	if err != nil || rows.Err() != nil {
 		return nil, err
 	}

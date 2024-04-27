@@ -56,7 +56,7 @@ func ToExportHandler() fiber.Handler {
 				})
 			}
 
-			attachment = fmt.Sprintf("attachment; filename=%s.json", rqst.Account)
+			attachment = fmt.Sprintf("attachment; filename=%s.json", rqst.Username)
 
 			c.Set("Content-Disposition", attachment)
 			c.Set("Content-Type", "application/json")
