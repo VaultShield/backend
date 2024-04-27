@@ -1,5 +1,6 @@
 package com.vaultshield.passwordmanager.services.impl;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.vaultshield.passwordmanager.exceptions.NotFoundException;
 import com.vaultshield.passwordmanager.models.entities.SeedPhraseEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
 import com.vaultshield.passwordmanager.models.request.RecoverChangePasswordRequest;
@@ -18,6 +20,7 @@ import com.vaultshield.passwordmanager.repository.UserRepository;
 import com.vaultshield.passwordmanager.security.jwt.JwtTokenUtil;
 import com.vaultshield.passwordmanager.security.service.Recovery;
 import com.vaultshield.passwordmanager.services.Recover;
+import com.vaultshield.passwordmanager.utils.ErrorMessages;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,45 +42,34 @@ public class RecoverImpl implements Recover {
 
     @Override
     public ResponseEntity<RecoverResponse> recover(RecoverRequest request) {
-    try {
-        
         Optional<UserEntity> userEntity;
         Optional<SeedPhraseEntity> seedPhraseEntity;
-        
+
         userEntity = userRepository.findByUsername(request.getUsername());
+        if (userEntity == null || !userEntity.isPresent()){
+            throw new NotFoundException(ErrorMessages.USER_NOT_FOUND_BY_USERNAME);
+        }
+
         seedPhraseEntity = seedPhraseRepository.findSeedPhraseEntityByUserId(userEntity.get().getId());
+        if (seedPhraseEntity == null || !seedPhraseEntity.isPresent()){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-        if (userEntity.isPresent() && seedPhraseEntity.isPresent()){
-                if (Recovery.compareHash(request.seedphrase, seedPhraseEntity.get().getPhrase())){
-                    try {
-                        String token = jwt.generateRecoverToken(userEntity.get().getId());
+        String token = jwt.generateRecoverToken(userEntity.get().getId());
+        if (token.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-                        if (token.isEmpty()){
-                            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                        }
-
-                        return new ResponseEntity<>(
-                        new RecoverResponse(token),
-                        HttpStatus.OK);
-                    } catch (Exception e) {
-                        return new ResponseEntity<>(
-                        HttpStatus.INTERNAL_SERVER_ERROR);
-                    }
-            }else {
-                return new ResponseEntity<>(
-                        new RecoverResponse(null),
-                        HttpStatus.UNAUTHORIZED);
-            }
+        if (Recovery.compareHash(request.seedphrase, seedPhraseEntity.get().getPhrase())){
+            return new ResponseEntity<>(
+                new RecoverResponse(token),
+               HttpStatus.OK);
         }else {
             return new ResponseEntity<>(
-                        new RecoverResponse(null),
-                        HttpStatus.NOT_FOUND);
+            new RecoverResponse(null),
+            HttpStatus.UNAUTHORIZED);
         }
-    } catch (Exception e) {
-        System.out.println(e);
-        return null;
-    }
-    }
+}
 
     @Override
     public ResponseEntity<?> recoverchange(RecoverChangePasswordRequest request, String header) {

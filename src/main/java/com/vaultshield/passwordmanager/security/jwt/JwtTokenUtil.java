@@ -116,8 +116,6 @@ public class JwtTokenUtil {
             Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
             Instant expiration = issuedAt.plus(30, ChronoUnit.MINUTES);
 
-            
-
             return Jwts.builder()
                 .setSubject(id)
                 .claim("type", "recover")
