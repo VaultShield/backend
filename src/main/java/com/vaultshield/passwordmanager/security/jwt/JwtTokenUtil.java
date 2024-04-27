@@ -31,18 +31,23 @@ public class JwtTokenUtil {
     @Value("${JWT_SECRET}")
     private String jwtSecret;
 
-    private Key getSigningKey() {
+    @Value("${JWT_RECOVER}")
+    private String recoverSecret;
 
+    private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
 
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     private Key getRecoverSingKey() {
-        String key = "5468576D5A7134743777217A25secret432A462D4A614E635266556A586E3272357538";
+        
+        if (recoverSecret == null || recoverSecret.isEmpty()){
+            System.out.println("recover secret is not set, using default");
+            recoverSecret = "5468576D5A7134743777217A25secret432A462D4A614E635266556A586E3272357538";
+    }
 
-        byte[] keyBytes = Decoders.BASE64.decode(key);
-
+        byte[] keyBytes = Decoders.BASE64.decode(recoverSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -135,7 +140,7 @@ public class JwtTokenUtil {
             throw new IllegalArgumentException("Token does not contain 'Bearer' type");
         }
         token = token.substring(7);
-        
+
         try {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(getRecoverSingKey()).build().parseClaimsJws(token);
             Claims body = claims.getBody();
