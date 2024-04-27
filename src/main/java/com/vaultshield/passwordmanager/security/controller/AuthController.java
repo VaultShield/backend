@@ -4,18 +4,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vaultshield.passwordmanager.documentation.ErrorExamples.ErrorResponse409Example;
 import com.vaultshield.passwordmanager.documentation.ErrorExamples.UnauthorizedErrorExample;
 import com.vaultshield.passwordmanager.models.request.LoginRequest;
+import com.vaultshield.passwordmanager.models.request.RecoverChangePasswordRequest;
+import com.vaultshield.passwordmanager.models.request.RecoverRequest;
 import com.vaultshield.passwordmanager.models.request.RegisterRequest;
 import com.vaultshield.passwordmanager.models.response.LoginResponse;
+import com.vaultshield.passwordmanager.models.response.RecoverResponse;
 import com.vaultshield.passwordmanager.models.response.RegisterResponse;
 import com.vaultshield.passwordmanager.security.model.request.TokenRefreshRequest;
 import com.vaultshield.passwordmanager.security.model.response.TokenRefreshResponse;
+import com.vaultshield.passwordmanager.services.impl.RecoverImpl;
 import com.vaultshield.passwordmanager.services.impl.UserServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +39,7 @@ public class AuthController {
 
         @Autowired
         private UserServiceImpl userService;
+        private RecoverImpl seedService;
 
         @Operation(summary = "User registration", description = "Register a new user")
         @ApiResponses(value = {
@@ -67,8 +74,20 @@ public class AuthController {
                         }),
                         @ApiResponse(responseCode = "401", description = "unauthorized", content = @Content(schema = @Schema(implementation = UnauthorizedErrorExample.class))),
         })
+        
         @PostMapping("/refreshtoken")
         public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
                 return userService.refreshtoken(request);
+        }
+
+        @PostMapping("/recover")
+        public ResponseEntity<RecoverResponse> recover(
+                @Valid @RequestBody @Schema(implementation = RecoverRequest.class) RecoverRequest request) {
+                return seedService.recover(request);
+        }
+
+        @PutMapping("/recover")
+        public ResponseEntity<?> putrecover(@RequestBody RecoverChangePasswordRequest request, @RequestHeader("Recover") String header) {
+                return seedService.recoverchange(request, header);
         }
 }

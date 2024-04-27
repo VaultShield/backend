@@ -34,22 +34,23 @@ public class RecoverImpl implements Recover {
     @Autowired
     private SeedPhraseRepository seedPhraseRepository;
 
-    private String token;
-    private String subject;
-
     @Override
     public ResponseEntity<RecoverResponse> recover(RecoverRequest request) {
-        Optional<UserEntity> userEntity;
-        Optional<SeedPhraseEntity> seedPhraseEntity;
-        JwtTokenUtil jwt = new JwtTokenUtil();
+        try {
+            Optional<UserEntity> userEntity;
+            Optional<SeedPhraseEntity> seedPhraseEntity;
+            JwtTokenUtil jwt = new JwtTokenUtil();
+            System.out.println(request);
         
 
         userEntity = userRepository.findByUsername(request.getUsername());
         seedPhraseEntity = seedPhraseRepository.findSeedPhraseEntityByUserId(userEntity.get().getId());
 
-        if (userEntity.isPresent()){
+        System.out.println(seedPhraseEntity);
+
+        if (userEntity.isPresent() && seedPhraseEntity.isPresent()){
                 if (Recovery.compareHash(request.seedphrase, seedPhraseEntity.get().getPhrase())){
-                    token = jwt.generateRecoverToken(userEntity.get().getId());
+                    String token = jwt.generateRecoverToken(userEntity.get().getId());
                     return new ResponseEntity<>(
                         new RecoverResponse(token),
                         HttpStatus.OK);
@@ -63,6 +64,13 @@ public class RecoverImpl implements Recover {
                         new RecoverResponse(null),
                         HttpStatus.NOT_FOUND);
         }
+
+        }catch (Exception e) {
+            System.out.println("ERROR: " + e);
+            return new ResponseEntity<>(
+                        new RecoverResponse(null),
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
@@ -70,12 +78,12 @@ public class RecoverImpl implements Recover {
         JwtTokenUtil jwt = new JwtTokenUtil();
         Optional<UserEntity> userEntity;
 
-        if (header.isEmpty()){
+        if (header.isEmpty() || request.getNewPassword().isEmpty() ){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         try {
-            subject = jwt.validateRecoverToken(header);
+            String subject = jwt.validateRecoverToken(header);
             userEntity = userRepository.findById(subject);
             UserEntity newUserEntity = userEntity.get();
 

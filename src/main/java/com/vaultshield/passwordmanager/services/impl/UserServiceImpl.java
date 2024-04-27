@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
         seedPhraseEntity.setUserId(userSaved.getId());
         seedPhraseRepository.save(seedPhraseEntity);
         
-        return new ResponseEntity<>(new RegisterResponse(newUser.getId()), HttpStatus.CREATED);
+        return new ResponseEntity<>(new RegisterResponse(newUser.getId(),seedPhrase),HttpStatus.CREATED);
     }
 
     @Override
