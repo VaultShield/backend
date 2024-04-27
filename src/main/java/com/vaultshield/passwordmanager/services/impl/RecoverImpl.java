@@ -34,13 +34,15 @@ public class RecoverImpl implements Recover {
     @Autowired
     private SeedPhraseRepository seedPhraseRepository;
 
+    @Autowired
+    private JwtTokenUtil jwt;
+
     @Override
     public ResponseEntity<RecoverResponse> recover(RecoverRequest request) {
     try {
         
         Optional<UserEntity> userEntity;
         Optional<SeedPhraseEntity> seedPhraseEntity;
-        JwtTokenUtil jwt = new JwtTokenUtil();
         
         userEntity = userRepository.findByUsername(request.getUsername());
         seedPhraseEntity = seedPhraseRepository.findSeedPhraseEntityByUserId(userEntity.get().getId());
@@ -79,7 +81,6 @@ public class RecoverImpl implements Recover {
 
     @Override
     public ResponseEntity<?> recoverchange(RecoverChangePasswordRequest request, String header) {
-        JwtTokenUtil jwt = new JwtTokenUtil();
         Optional<UserEntity> userEntity;
 
         if (header.isEmpty() || request.getNewPassword().isEmpty() ){

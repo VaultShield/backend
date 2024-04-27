@@ -42,12 +42,8 @@ public class JwtTokenUtil {
 
     private Key getRecoverSingKey() {
         
-        if (recoverSecret == null || recoverSecret.isEmpty()){
-            System.out.println("recover secret is not set, using default");
-            recoverSecret = "5468576D5A7134743777217A25secret432A462D4A614E635266556A586E3272357538";
-    }
-
         byte[] keyBytes = Decoders.BASE64.decode(recoverSecret);
+        
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
