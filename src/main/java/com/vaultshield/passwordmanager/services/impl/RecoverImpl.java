@@ -47,7 +47,7 @@ public class RecoverImpl implements Recover {
 
         userEntity = userRepository.findByUsername(request.getUsername());
         if (userEntity == null || !userEntity.isPresent()){
-            throw new NotFoundException(ErrorMessages.USER_NOT_FOUND_BY_USERNAME);
+            throw new NotFoundException(ErrorMessages.USER_NOT_FOUND_BY_USERNAME + request.username);
         }
 
         seedPhraseEntity = seedPhraseRepository.findSeedPhraseEntityByUserId(userEntity.get().getId());
