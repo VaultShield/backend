@@ -20,7 +20,7 @@ services:
       - "8080:8080"
     restart: always
     environment:
-      JWT_TOKEN: "VAULTSHIELD_KEY"
+      SPRING_PROFILES_ACTIVE: "docker"
   
   go-service:
     build:
