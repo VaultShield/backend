@@ -39,6 +39,8 @@ public class AuthController {
 
         @Autowired
         private UserServiceImpl userService;
+
+        @Autowired
         private RecoverImpl seedService;
 
         @Operation(summary = "User registration", description = "Register a new user")

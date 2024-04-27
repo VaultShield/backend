@@ -12,12 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.JWTVerifier;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -44,12 +38,22 @@ public class JwtTokenUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    private Key getRecoverSingKey() {
+        String key = "5468576D5A7134743777217A25secret432A462D4A614E635266556A586E3272357538";
+
+        byte[] keyBytes = Decoders.BASE64.decode(key);
+
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
     public String generateJwtToken(Authentication authentication) {
 
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
 
         Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         Instant expiration = issuedAt.plus(30, ChronoUnit.MINUTES);
+
+        System.out.println(getSigningKey());
 
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
@@ -106,17 +110,19 @@ public class JwtTokenUtil {
         return expirationDate.toInstant();
     }
 
-        public String generateRecoverToken(String id) {
+    public String generateRecoverToken(String id) {
         try {
-
             Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
             Instant expiration = issuedAt.plus(30, ChronoUnit.MINUTES);
 
-            return JWT.create()
-                .withSubject(id)
-                .withClaim("type", "auth")
-                .withExpiresAt(expiration)
-                .sign(Algorithm.HMAC512(jwtSecret));
+            
+
+            return Jwts.builder()
+                .setSubject(id)
+                .claim("type", "recover")
+                .setExpiration(Date.from(expiration))
+                .signWith(getRecoverSingKey(), SignatureAlgorithm.HS256)
+                .compact();
         } catch (Exception e) {
             System.out.println("error by error generating token: " + e.getMessage());
             throw new IllegalStateException("Internal server error");
@@ -124,21 +130,40 @@ public class JwtTokenUtil {
     }
 
     public String validateRecoverToken(String token){
-        JWTVerifier verifier = JWT.require(Algorithm.HMAC512(jwtSecret)).build();
-        try {
-            token = token.substring(7);
-            DecodedJWT jwt = verifier.verify(token);
-            Claim claim = jwt.getClaim("type");
-            String type = claim.asString();
 
-            if (type.equals("auth")) {
-                return jwt.getSubject();
+        if (!token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Token does not contain 'Bearer' type");
+        }
+        token = token.substring(7);
+        
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(getRecoverSingKey()).build().parseClaimsJws(token);
+            Claims body = claims.getBody();
+
+            if (body.get("type").equals("recover")){
+                return body.getSubject();
+            }else{
+                return null;
             }
+            
+        } catch (MalformedJwtException e) {
+            log.error("Invalid JWT token: {}", e.getMessage());
             return null;
-        } catch (Exception e) {
-            System.out.println("error by error generating token: " + e.getMessage());
-            throw new IllegalStateException("Internal server error");
+        } catch (ExpiredJwtException e) {
+            log.error("JWT token is expired: {}", e.getMessage());
+            throw e;
+        } catch (UnsupportedJwtException e) {
+            log.error("JWT token is unsupported: {}", e.getMessage());
+            return null;
+        } catch (IllegalArgumentException e) {
+            log.error("JWT claims string is empty: {}", e.getMessage());
+            return null;
+        } catch (SignatureException e) {
+            log.error("Invalid JWT signature: {}", e.getMessage());
+            return null;
+        } catch (Exception e ) {
+            log.error("internal error: {}", e);
+            return null;
         }
     }
-
 }

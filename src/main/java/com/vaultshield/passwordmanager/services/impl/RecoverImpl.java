@@ -36,24 +36,31 @@ public class RecoverImpl implements Recover {
 
     @Override
     public ResponseEntity<RecoverResponse> recover(RecoverRequest request) {
-        try {
-            Optional<UserEntity> userEntity;
-            Optional<SeedPhraseEntity> seedPhraseEntity;
-            JwtTokenUtil jwt = new JwtTokenUtil();
-            System.out.println(request);
+    try {
         
-
+        Optional<UserEntity> userEntity;
+        Optional<SeedPhraseEntity> seedPhraseEntity;
+        JwtTokenUtil jwt = new JwtTokenUtil();
+        
         userEntity = userRepository.findByUsername(request.getUsername());
         seedPhraseEntity = seedPhraseRepository.findSeedPhraseEntityByUserId(userEntity.get().getId());
 
-        System.out.println(seedPhraseEntity);
-
         if (userEntity.isPresent() && seedPhraseEntity.isPresent()){
                 if (Recovery.compareHash(request.seedphrase, seedPhraseEntity.get().getPhrase())){
-                    String token = jwt.generateRecoverToken(userEntity.get().getId());
-                    return new ResponseEntity<>(
+                    try {
+                        String token = jwt.generateRecoverToken(userEntity.get().getId());
+
+                        if (token.isEmpty()){
+                            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                        }
+
+                        return new ResponseEntity<>(
                         new RecoverResponse(token),
                         HttpStatus.OK);
+                    } catch (Exception e) {
+                        return new ResponseEntity<>(
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
             }else {
                 return new ResponseEntity<>(
                         new RecoverResponse(null),
@@ -64,13 +71,10 @@ public class RecoverImpl implements Recover {
                         new RecoverResponse(null),
                         HttpStatus.NOT_FOUND);
         }
-
-        }catch (Exception e) {
-            System.out.println("ERROR: " + e);
-            return new ResponseEntity<>(
-                        new RecoverResponse(null),
-                        HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    } catch (Exception e) {
+        System.out.println(e);
+        return null;
+    }
     }
 
     @Override
