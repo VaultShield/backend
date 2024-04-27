@@ -65,4 +65,21 @@ public class ExampleValues {
 
     public static final String PASS_ID = "899eef8f-71c7-43a6-a91f-85398cbc5bf4";
 
+    public static final String SEED = "[\r\n" + //
+                "        \"jaboticaba\",\r\n" + //
+                "        \"cantaloupe\",\r\n" + //
+                "        \"honeydew\",\r\n" + //
+                "        \"kei apple\",\r\n" + //
+                "        \"rowan\",\r\n" + //
+                "        \"tangerine\",\r\n" + //
+                "        \"almond\",\r\n" + //
+                "        \"hackberry\",\r\n" + //
+                "        \"vault\",\r\n" + //
+                "        \"tomato\",\r\n" + //
+                "        \"margarita\",\r\n" + //
+                "        \"nopales\",\r\n" + //
+                "        \"dewberry\",\r\n" + //
+                "        \"parsley\",\r\n" + //
+                "        \"nectarine\"\r\n" + //
+                "    ]";
 }
