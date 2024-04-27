@@ -3,6 +3,7 @@ package com.vaultshield.passwordmanager.services.impl;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +22,20 @@ import com.vaultshield.passwordmanager.exceptions.QueryError;
 import com.vaultshield.passwordmanager.exceptions.SaveException;
 import com.vaultshield.passwordmanager.exceptions.TokenRefreshException;
 import com.vaultshield.passwordmanager.mapper.UserMapper;
+import com.vaultshield.passwordmanager.models.entities.SeedPhraseEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
 import com.vaultshield.passwordmanager.models.request.LoginRequest;
 import com.vaultshield.passwordmanager.models.request.RegisterRequest;
 import com.vaultshield.passwordmanager.models.request.UserRequest;
 import com.vaultshield.passwordmanager.models.response.LoginResponse;
 import com.vaultshield.passwordmanager.models.response.RegisterResponse;
+import com.vaultshield.passwordmanager.repository.SeedPhraseRepository;
 import com.vaultshield.passwordmanager.repository.UserRepository;
 import com.vaultshield.passwordmanager.security.jwt.JwtTokenUtil;
 import com.vaultshield.passwordmanager.security.model.RefreshTokenEntity;
 import com.vaultshield.passwordmanager.security.model.request.TokenRefreshRequest;
 import com.vaultshield.passwordmanager.security.model.response.TokenRefreshResponse;
+import com.vaultshield.passwordmanager.security.service.Recovery;
 import com.vaultshield.passwordmanager.security.service.RefreshTokenService;
 import com.vaultshield.passwordmanager.services.UserService;
 import com.vaultshield.passwordmanager.utils.ErrorMessages;
@@ -54,6 +58,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    private SeedPhraseRepository seedPhraseRepository;
+
     String ZONE_ID = "CET";
 
     @Override
@@ -70,8 +77,15 @@ public class UserServiceImpl implements UserService {
         newUser.setUsername(signUpRequest.getUsername());
         newUser.setPassword(encoder.encode(signUpRequest.getPassword()));
         newUser.setActive(true);
-        userRepository.save(newUser);
-        return new ResponseEntity<>(new RegisterResponse(newUser.getId()), HttpStatus.CREATED);
+        UserEntity userSaved = userRepository.save(newUser);
+        
+        List<String> seedPhrase = Recovery.generateSeedPhrase(15);
+        SeedPhraseEntity seedPhraseEntity = new SeedPhraseEntity();
+        seedPhraseEntity.setPhrase(Recovery.hashSeedPhrase(seedPhrase));
+        seedPhraseEntity.setUserId(userSaved.getId());
+        seedPhraseRepository.save(seedPhraseEntity);
+        
+        return new ResponseEntity<>(new RegisterResponse(newUser.getId(),seedPhrase),HttpStatus.CREATED);
     }
 
     @Override

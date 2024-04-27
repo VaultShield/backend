@@ -31,10 +31,19 @@ public class JwtTokenUtil {
     @Value("${JWT_SECRET}")
     private String jwtSecret;
 
-    private Key getSigningKey() {
+    @Value("${JWT_RECOVER}")
+    private String recoverSecret;
 
+    private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
 
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private Key getRecoverSingKey() {
+        
+        byte[] keyBytes = Decoders.BASE64.decode(recoverSecret);
+        
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -44,6 +53,8 @@ public class JwtTokenUtil {
 
         Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         Instant expiration = issuedAt.plus(30, ChronoUnit.MINUTES);
+
+        System.out.println(getSigningKey());
 
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
@@ -100,4 +111,58 @@ public class JwtTokenUtil {
         return expirationDate.toInstant();
     }
 
+    public String generateRecoverToken(String id) {
+        try {
+            Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+            Instant expiration = issuedAt.plus(30, ChronoUnit.MINUTES);
+
+            return Jwts.builder()
+                .setSubject(id)
+                .claim("type", "recover")
+                .setExpiration(Date.from(expiration))
+                .signWith(getRecoverSingKey(), SignatureAlgorithm.HS256)
+                .compact();
+        } catch (Exception e) {
+            System.out.println("error by error generating token: " + e.getMessage());
+            throw new IllegalStateException("Internal server error");
+        }
+    }
+
+    public String validateRecoverToken(String token){
+
+        if (!token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Token does not contain 'Bearer' type");
+        }
+        token = token.substring(7);
+
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(getRecoverSingKey()).build().parseClaimsJws(token);
+            Claims body = claims.getBody();
+
+            if (body.get("type").equals("recover")){
+                return body.getSubject();
+            }else{
+                return null;
+            }
+            
+        } catch (MalformedJwtException e) {
+            log.error("Invalid JWT token: {}", e.getMessage());
+            return null;
+        } catch (ExpiredJwtException e) {
+            log.error("JWT token is expired: {}", e.getMessage());
+            throw e;
+        } catch (UnsupportedJwtException e) {
+            log.error("JWT token is unsupported: {}", e.getMessage());
+            return null;
+        } catch (IllegalArgumentException e) {
+            log.error("JWT claims string is empty: {}", e.getMessage());
+            return null;
+        } catch (SignatureException e) {
+            log.error("Invalid JWT signature: {}", e.getMessage());
+            return null;
+        } catch (Exception e ) {
+            log.error("internal error: {}", e);
+            return null;
+        }
+    }
 }
