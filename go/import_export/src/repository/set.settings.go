@@ -5,26 +5,23 @@ import (
 	"strconv"
 )
 
-func GetEnvSettings() Settings {
-
+func setSettings() *Settings {
 	hostname := os.Getenv("HOSTNAME")
-	username := os.Getenv("USERNAME")
+	username := os.Getenv("USER")
 	password := os.Getenv("PASSWORD")
 	database := os.Getenv("DATABASE")
 	port := os.Getenv("PORT")
 
-	p, err := strconv.ParseUint(port, 10, 16)
+	p, err := strconv.ParseUint(port, 10, 64)
 	if err != nil {
 		panic(err)
 	}
 
-	settings := Settings{
+	return &Settings{
 		Hostname: hostname,
-		User:     username,
+		Username: username,
 		Password: password,
-		Database: database,
 		Port:     p,
+		Database: database,
 	}
-
-	return settings
 }

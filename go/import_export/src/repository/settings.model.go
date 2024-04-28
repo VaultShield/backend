@@ -2,8 +2,8 @@ package repository
 
 type Settings struct {
 	Hostname string
-	Port     uint64
-	User     string
+	Username string
 	Password string
+	Port     uint64
 	Database string
 }
