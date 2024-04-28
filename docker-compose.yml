@@ -31,7 +31,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "4000:4000"
+      - "8085:8085"
     restart: always
     environment:
       HOSTNAME: postgres

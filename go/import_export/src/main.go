@@ -1,15 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"net/http"
+	"os"
 
+	"github.com/VaultShield/handlers"
 	"github.com/VaultShield/repository"
-	"github.com/VaultShield/routers"
-	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
-
+	PORT := os.Getenv("SERVER-PORT")
+	if PORT == "" {
+		PORT = "8085"
+	}
 	db, err := repository.ConnectionDB()
 	if err != nil {
 		panic(err)
@@ -17,11 +22,10 @@ func main() {
 	repository.DB = db
 	defer db.Close()
 
-	app := fiber.New()
-	routers.Setup(app)
-
-	err = app.Listen(":4000")
-	if err != nil {
-		log.Fatal(err)
+	// Standard library
+	http.HandleFunc("/api/intern/export", handlers.ToExportHandler2)
+	fmt.Printf("Server is starting on http://localhost:%s\n", PORT)
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
 	}
 }
