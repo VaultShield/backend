@@ -1,14 +1,17 @@
 spring:
   datasource:
-    url: ${SPRING_MYSQL_URL:jdbc:postgresql://localhost:5433/db}
-    username: ${SPRING_MYSQL_USER:postgres}
-    password: ${MYSQL_ROOT_PASSWORD:admin}
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5433/db}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:admin}
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+
+JWT_SECRET: 5468576D5A7134743777217A25432A462D4A614E635266556A586E3272357538
+JWT_RECOVER: 6QDOHA126QXGFL5MMOZMSV12V5LK986BWKXHFNAMAFTOQFRINY4E2F5162341412
 
 springfox:
   documentation:

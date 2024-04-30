@@ -1,103 +1,110 @@
 package com.vaultshield.passwordmanager.services.impl;
 
-import com.vaultshield.passwordmanager.mapper.DtoAndEntityMapper;
-import com.vaultshield.passwordmanager.models.dto.Credentials;
-import com.vaultshield.passwordmanager.models.entities.CredentialsEntity;
-import com.vaultshield.passwordmanager.models.entities.PasswordEntity;
-import com.vaultshield.passwordmanager.models.entities.UserEntity;
-import com.vaultshield.passwordmanager.models.request.ChangedCredentialsRequest;
-import com.vaultshield.passwordmanager.models.request.CommonIdRequest;
-import com.vaultshield.passwordmanager.models.request.CreateNewCredentialRequest;
-import com.vaultshield.passwordmanager.models.request.FindCredentialsRequest;
-import com.vaultshield.passwordmanager.repository.CredentialsRepository;
-import com.vaultshield.passwordmanager.repository.LoginAndRegistrationRepository;
-import com.vaultshield.passwordmanager.services.CredentialsService;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.vaultshield.passwordmanager.exceptions.NotFoundException;
+import com.vaultshield.passwordmanager.exceptions.SaveException;
+import com.vaultshield.passwordmanager.models.entities.CredentialsEntity;
+import com.vaultshield.passwordmanager.models.entities.PasswordEntity;
+import com.vaultshield.passwordmanager.models.entities.UserEntity;
+import com.vaultshield.passwordmanager.models.request.CredentialRequest;
+import com.vaultshield.passwordmanager.repository.CredentialsRepository;
+import com.vaultshield.passwordmanager.repository.UserRepository;
+import com.vaultshield.passwordmanager.services.CredentialsService;
+import com.vaultshield.passwordmanager.utils.ErrorMessages;
 
 @Service
-@Slf4j
 public class CredentialsServiceImpl implements CredentialsService {
+
     @Autowired
     CredentialsRepository credentialsRepository;
 
     @Autowired
-    LoginAndRegistrationRepository loginAndRegistrationRepository;
+    UserRepository userRepository;
+
+
     @Autowired
-    DtoAndEntityMapper mapper;
+    PasswordServiceImpl passwordService;
+
     @Override
-    public void insertCredential(CreateNewCredentialRequest request) {
+    public CredentialsEntity insertCredential(CredentialRequest request) throws SaveException {
 
         CredentialsEntity entity = new CredentialsEntity();
-        //entity.setCredentialTypeId(request.getCredentialTypeId());
         entity.setCreateDate(LocalDateTime.now());
 
-        UserEntity userEntity = loginAndRegistrationRepository.findById(request.getUserId()).orElse(null);
+        UserEntity userEntity = userRepository.findById(request.getUserId()).orElse(null);
         if (userEntity == null) {
-            throw new EntityNotFoundException("No se encontró el usuario con el ID: " + request.getUserId());
+            throw new SaveException(ErrorMessages.USER_NOT_FOUND_BY_ID + request.getUserId());
         }
         entity.setUser(userEntity);
 
 
-        PasswordEntity passwordEntity = new PasswordEntity();
-        passwordEntity.setTitle(request.getTitle());
-        passwordEntity.setAccount(request.getAccount());
-        passwordEntity.setPassword(request.getPassword());
-        passwordEntity.setNote(request.getNote());
+        PasswordEntity passwordEntity = passwordService.createPassword(request);
         passwordEntity.setCredentials(entity);
-
         entity.setPassword(passwordEntity);
+        entity.setState("Active");
+        entity.setFavorite(request.getFavorite());
+        entity.setGroupId(request.getGroupId());
 
-        credentialsRepository.save(entity);
+        return credentialsRepository.save(entity);
     }
 
     @Override
-    public void modifyCredential(ChangedCredentialsRequest request) {
-       Optional<CredentialsEntity> entity  = credentialsRepository.findById(request.getCredentialId());
-     //  password.setAccount(request.getAccount());
-      // password.setTitle(request.getTitle());
-      // password.setPassword(request.getPassword());
-
-        if (entity.isPresent()){
-            entity.get().getPassword().setPassword(request.getPassword());
-            entity.get().setUpdateDate(LocalDateTime.now());
-            entity.get().getPassword().setAccount(request.getAccount());
-            credentialsRepository.save(entity.get());
+    public CredentialsEntity modifyCredential(CredentialRequest request, String id)
+            throws SaveException, NotFoundException {
+        Optional<CredentialsEntity> entityToUpdate = credentialsRepository.findById(id);
+        if (!entityToUpdate.isPresent()) {
+            throw new NotFoundException(ErrorMessages.CRED_NOT_FOUND_BY_ID + id);
         }
+        CredentialsEntity credentialToUpdate = entityToUpdate.get();
+        if (request.getPassword() != null) {
+            String passwordId = credentialToUpdate.getPassword().getId();
+            PasswordEntity passwordEntity = passwordService.updatePassword(request, passwordId);
+            passwordEntity.setCredentials(credentialToUpdate);
+            credentialToUpdate.setPassword(passwordEntity);
+        }
+        if (request.getFavorite() != null) {
+            credentialToUpdate.setFavorite(request.getFavorite());
+        }
+        if (request.getGroupId() != null) {
+            credentialToUpdate.setGroupId(request.getGroupId());
+        }
+     credentialToUpdate.setState("Active");
+     credentialToUpdate.setUpdateDate(LocalDateTime.now());
+     return credentialsRepository.save(credentialToUpdate);
     }
 
     @Override
-    @Transactional
-    public void deleteCredential(CommonIdRequest request) {
-       // Optional<CredentialsEntity> entity  = credentialsRepository.findById(request.getId());
-        credentialsRepository.deleteById(request.getId());
+    public CredentialsEntity deleteCredential(String id) throws NotFoundException {
+        Optional<CredentialsEntity> entityToUpdate = credentialsRepository.findById(id);
+        if (!entityToUpdate.isPresent()) {
+            throw new NotFoundException(ErrorMessages.CRED_NOT_FOUND_BY_ID + id);
+        }
+        passwordService.deletePassword(entityToUpdate.get().getPassword().getId());
+        credentialsRepository.deleteById(id);
+        return entityToUpdate.get();
     }
 
     @Override
-    public List<Credentials> findAllCredentials(FindCredentialsRequest request) {
-        List<CredentialsEntity> credentialsEntities = credentialsRepository.findCredentialsEntityByUserId(request.getUserId()).get();
-
-        List<Credentials>  response;
-        response = credentialsEntities.stream()
-                .map(mapper::credentialsEntityToCredentialsDto)
-                .collect(Collectors.toList());
-        return response;
+    public List<CredentialsEntity> findAllCredentials(String userId) throws NotFoundException {
+        List<CredentialsEntity> credentialsEntities = credentialsRepository.findCredentialsEntityByUserId(userId).get();
+        if (credentialsEntities.isEmpty()) {
+            throw new NotFoundException(ErrorMessages.CRED_NOT_FOUND_BY_USERID + userId);
+        }
+        return credentialsEntities;
     }
 
     @Override
-    public Credentials findOneCredential(CommonIdRequest request) {
-       CredentialsEntity entity = credentialsRepository.findById(request.getId()).get();
-       Credentials response = mapper.credentialsEntityToCredentialsDto(entity);
-        return response;
+    public CredentialsEntity findOneCredential(String id) throws NotFoundException {
+        Optional<CredentialsEntity> entity = credentialsRepository.findById(id);
+        if (!entity.isPresent()) {
+            throw new NotFoundException(ErrorMessages.CRED_NOT_FOUND_BY_ID + id);
+        }
+        return entity.get();
     }
 }
