@@ -23,7 +23,7 @@ func main() {
 	defer db.Close()
 
 	// Standard library
-	http.HandleFunc("/api/intern/export", handlers.ToExportHandler2)
+	http.HandleFunc("/api/intern/export", handlers.ToExportHandler)
 	fmt.Printf("Server is starting on http://localhost:%s\n", PORT)
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil); err != nil {
 		log.Fatalf("Failed to start server: %v", err)

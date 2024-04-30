@@ -26,7 +26,7 @@ func ToJSONExport(rqst request.ExportationRequest) ([]byte, error) {
 
 	query := `
         			SELECT p.title, p.account, p.password, p.note
-        			FROM Users u
+        			FROM users u
         			JOIN Credentials c ON u.id = c.user_id
         			JOIN Password p ON c.id = p.credentials_id
         			WHERE u.username = $1 AND u.active = true;
