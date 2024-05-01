@@ -20,9 +20,9 @@ services:
       - "8080:8080"
     restart: always
     environment:
-      SPRING_PROFILES_ACTIVE: "docker"
+      SPRING_PROFILES_ACTIVE: docker
       JWT_SECRET: ${JWT_SECRET}
-      JWT_Recover: ${JWT_RECOVER}
+      JWT_RECOVER: ${JWT_RECOVER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
   
   go-service:

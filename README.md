@@ -25,6 +25,14 @@ $ git clone https://github.com/VaultShield/backend.git
 ```bash
 $ cd /backend
 ```
+be sure to fill the environment variables, look for a '.env' next to start scripts (if not, create it) and add the following configuration
+```yml
+JWT_SECRET=YOUR_SECRET_JWT
+JWT_RECOVER=YOUR_SECRET_JWT_RECOVER
+POSTGRES_PASSWORD=YOUR_SECRET_POSTGRES_PASSWORD
+```
+and please change the values!!.
+
 to run the latest version available under development **(optional)**
 ```bash
 $ git switch develop
@@ -46,7 +54,7 @@ You can access the swagger to review also from the documentation, make sure to s
 - http://localhost:8080/swagger-ui/index.html#/
 
 ## Postman collections
-We have created a postman collections to test the api, just follow the steps to find it
+We have created postman collections to test the api, just follow the steps to find it
 ```bash
 $ cd backend/postman/
 ```
