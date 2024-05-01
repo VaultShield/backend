@@ -4,7 +4,7 @@ echo "Building Docker images and starting services with Docker Compose..."
 
 docker-compose up --build -d
 
-# verificar la operación
+# verify the operation
 if [ $? -eq 0 ]; then
     echo "Docker containers are up and running."
 else
