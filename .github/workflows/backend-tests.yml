@@ -51,6 +51,6 @@ jobs:
         POSTGRES_URL: jdbc:postgresql://postgres:5432/db
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        SPRING_PROFILES_ACTIVE: action
+        SPRING_PROFILES_ACTIVE: "docker"
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
         JWT_RECOVER: ${{ secrets.JWT_RECOVER }}
