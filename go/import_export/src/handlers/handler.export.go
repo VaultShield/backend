@@ -13,6 +13,8 @@ import (
 	"github.com/VaultShield/services"
 )
 
+// Handler to manage the actions to be done, based on the request sent,
+// it will execute the ToJsonExport or ToCsvExport function if available
 func ToExportHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -22,8 +24,12 @@ func ToExportHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		log.Println("ERROR:", err)
-		respondWithError(w, "Bad Request", http.StatusBadRequest)
+		RespondWithError(w, "Bad Request", http.StatusBadRequest)
 		return
+	}
+
+	if request.Username == "" || request.CredentialsType == "" || request.FormatToExport == "" {
+		RespondWithError(w, "Bad Request", http.StatusBadRequest)
 	}
 
 	if request.CredentialsType == "password" {
@@ -34,18 +40,18 @@ func ToExportHandler(w http.ResponseWriter, r *http.Request) {
 			dataByte, err = services.ToJSONExport(request)
 			if err != nil {
 				if err == error_handler.Err_NOT_FOUND {
-					respondWithError(w, error_handler.Err_NOT_FOUND.Error(), http.StatusNotFound)
+					RespondWithError(w, error_handler.Err_NOT_FOUND.Error(), http.StatusNotFound)
 					return
 				} else {
-					respondWithError(w, "Internal Server Error", http.StatusInternalServerError)
+					RespondWithError(w, "Internal Server Error", http.StatusInternalServerError)
 				}
 
-				respondWithError(w, fmt.Sprintf("Error generating export %s", err), http.StatusInternalServerError)
+				RespondWithError(w, fmt.Sprintf("Error generating export %s", err), http.StatusInternalServerError)
 				return
 			}
 		} else {
 			errorString := fmt.Sprintf("unimplemented export %s type, try with 'json'", request.FormatToExport)
-			respondWithError(w, errorString, http.StatusServiceUnavailable)
+			RespondWithError(w, errorString, http.StatusServiceUnavailable)
 			return
 		}
 
@@ -58,12 +64,12 @@ func ToExportHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	} else {
 		errorString := fmt.Sprintf("unimplemented export %s credential, try with 'password'", request.CredentialsType)
-		respondWithError(w, errorString, http.StatusServiceUnavailable)
+		RespondWithError(w, errorString, http.StatusServiceUnavailable)
 		return
 	}
 }
 
-func respondWithError(w http.ResponseWriter, message string, statuscode int) {
+func RespondWithError(w http.ResponseWriter, message string, statuscode int) {
 	resp := response.StandardHttpResponse{
 		Message: message,
 		Data:    nil,
