@@ -5,7 +5,7 @@ services:
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: db
     ports:
       - "5432:5432"
@@ -21,6 +21,9 @@ services:
     restart: always
     environment:
       SPRING_PROFILES_ACTIVE: "docker"
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_Recover: ${JWT_RECOVER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
   
   go-service:
     build:
@@ -36,7 +39,7 @@ services:
     environment:
       HOSTNAME: postgres
       USER: postgres
-      PASSWORD: admin
+      PASSWORD: ${POSTGRES_PASSWORD}
       DATABASE: db
       PORT: 5432
 
