@@ -2,12 +2,12 @@
   {
     "name": "JWT_SECRET",
     "type": "java.lang.String",
-    "description": "A description for 'JWT_SECRET'"
+    "description": "JWT secret is to manage the signing of authentication tokens, 'JWT_SECRET'"
   },
   {
     "name": "JWT_RECOVER",
     "type": "java.lang.String",
-    "description": "A description for 'JWT_RECOVER'"
+    "description": "The JWT recover is used to manage password recovery sessions valid for a certain period and with a different signature, 'JWT_RECOVER'"
   }
 ]
 }

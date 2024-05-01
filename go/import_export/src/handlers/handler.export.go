@@ -5,69 +5,81 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/VaultShield/handlers/error_handler"
 	"github.com/VaultShield/models/request"
 	"github.com/VaultShield/models/response"
 	"github.com/VaultShield/services"
-	"github.com/gofiber/fiber/v2"
 )
 
-func ToExportHandler() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		body := c.Body()
-		var rqst request.ExportationRequest
-
-		if err := json.Unmarshal(body, &rqst); err != nil {
-			log.Println("ERROR:", err)
-			return c.Status(fiber.StatusBadRequest).JSON(response.StandardHttpResponse{
-				Message: fiber.ErrBadRequest.Message,
-				Status:  fiber.StatusBadRequest,
-				Data:    nil,
-			})
-		}
-
-		if rqst.CredentialsType == "password" {
-			var attachment string
-			var dataByte []byte
-			var err error
-
-			if rqst.FormatToExport == "json" {
-				dataByte, err = services.ToJSONExport(rqst)
-				if err != nil {
-					if err == error_handler.Err_NOT_FOUND {
-						return c.Status(fiber.StatusNotFound).JSON(response.StandardHttpResponse{
-							Message: "this user does not have passwords",
-							Status:  fiber.StatusNotFound,
-							Data:    nil,
-						})
-					}
-
-					return c.Status(fiber.StatusInternalServerError).JSON(response.StandardHttpResponse{
-						Message: "Error generating export",
-						Status:  fiber.StatusInternalServerError,
-						Data:    nil,
-					})
-				}
-			} else {
-				errorString := fmt.Sprintf("unimplemented export %s type, try with 'json'", rqst.FormatToExport)
-				return c.Status(fiber.StatusServiceUnavailable).JSON(fiber.Map{
-					"Message": errorString,
-				})
-			}
-
-			attachment = fmt.Sprintf("attachment; filename=%s.json", rqst.Username)
-
-			c.Set("Content-Disposition", attachment)
-			c.Set("Content-Type", "application/json")
-
-			encodedData := base64.StdEncoding.EncodeToString(dataByte)
-
-			return c.Status(fiber.StatusCreated).JSON(encodedData)
-		}
-		errorString := fmt.Sprintf("unimplemented credetial %s type, try with 'password'", rqst.CredentialsType)
-		return c.Status(fiber.StatusNotImplemented).JSON(fiber.Map{
-			"Message": errorString,
-		})
+// Handler to manage the actions to be done, based on the request sent,
+// it will execute the ToJsonExport or ToCsvExport function if available
+func ToExportHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
 	}
+	var request request.ExportationRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		log.Println("ERROR:", err)
+		RespondWithError(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	if request.Username == "" || request.CredentialsType == "" || request.FormatToExport == "" {
+		RespondWithError(w, "Bad Request", http.StatusBadRequest)
+	}
+
+	if request.CredentialsType == "password" {
+		var attachment string
+		var dataByte []byte
+
+		if request.FormatToExport == "json" {
+			dataByte, err = services.ToJSONExport(request)
+			if err != nil {
+				if err == error_handler.Err_NOT_FOUND {
+					RespondWithError(w, error_handler.Err_NOT_FOUND.Error(), http.StatusNotFound)
+					return
+				} else {
+					RespondWithError(w, "Internal Server Error", http.StatusInternalServerError)
+				}
+
+				RespondWithError(w, fmt.Sprintf("Error generating export %s", err), http.StatusInternalServerError)
+				return
+			}
+		} else {
+			errorString := fmt.Sprintf("unimplemented export %s type, try with 'json'", request.FormatToExport)
+			RespondWithError(w, errorString, http.StatusServiceUnavailable)
+			return
+		}
+
+		attachment = fmt.Sprintf("attachment; filename=%s.json", request.Username)
+		w.Header().Set("Content-Disposition", attachment)
+		w.Header().Set("Content-Type", "application/json")
+		encodedData := base64.StdEncoding.EncodeToString(dataByte)
+		w.WriteHeader(http.StatusCreated)
+		w.Write([]byte(encodedData))
+		return
+	} else {
+		errorString := fmt.Sprintf("unimplemented export %s credential, try with 'password'", request.CredentialsType)
+		RespondWithError(w, errorString, http.StatusServiceUnavailable)
+		return
+	}
+}
+
+func RespondWithError(w http.ResponseWriter, message string, statuscode int) {
+	resp := response.StandardHttpResponse{
+		Message: message,
+		Data:    nil,
+	}
+	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		http.Error(w, "Error processing the request", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statuscode)
+	w.Write(jsonResp)
 }

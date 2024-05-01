@@ -1,8 +1,9 @@
+# Use with caution, these are production properties !!!
 spring:
   datasource:
-    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5433/db}
+    url: ${POSTGRES_URL:jdbc:postgresql://postgres:5432/db}
     username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD:admin}
+    password: ${POSTGRES_PASSWORD}
   jpa:
     properties:
       hibernate:
@@ -10,8 +11,8 @@ spring:
     hibernate:
       ddl-auto: update
 
-JWT_SECRET: 5468576D5A7134743777217A25432A462D4A614E635266556A586E3272357538
-JWT_RECOVER: 6QDOHA126QXGFL5MMOZMSV12V5LK986BWKXHFNAMAFTOQFRINY4E2F5162341412
+JWT_SECRET: ${JWT_SECRET} # Handled by environment variables or github/deploy secret
+JWT_RECOVER: ${JWT_RECOVER} # Handled by environment variables or github/deploy secret
 
 springfox:
   documentation:
@@ -19,6 +20,3 @@ springfox:
       enabled: true
     api-docs:
       path: /v3/api-docs
-
-password-manager:
-  jwtKey: ${JWT_TOKEN:default}

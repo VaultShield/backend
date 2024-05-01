@@ -1,8 +1,10 @@
+
+# Action to test Java Enviroment
 name: Backend Test
 
 on:
   pull_request:
-    branches: [ master, develop ]
+    branches: [ master ] #need added "develop"
 
 jobs:
   build-and-run:
@@ -10,13 +12,13 @@ jobs:
     
     services:
       postgres:
-        image: postgres:latest
+        image: postgres:16
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: admin
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB: db
         ports:
-          - 5432:5432  # mapeo de 5433 por ejecución default
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -50,5 +52,7 @@ jobs:
       env:
         POSTGRES_URL: jdbc:postgresql://postgres:5432/db
         POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: admin
-        JWT_TOKEN: default
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        SPRING_PROFILES_ACTIVE: "docker"
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        JWT_RECOVER: ${{ secrets.JWT_RECOVER }}
