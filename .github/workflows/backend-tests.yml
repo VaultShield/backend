@@ -1,3 +1,4 @@
+# Action to test Java Enviroment
 name: Backend Test
 
 on:
@@ -10,7 +11,7 @@ jobs:
     
     services:
       postgres:
-        image: postgres:latest
+        image: postgres:16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
