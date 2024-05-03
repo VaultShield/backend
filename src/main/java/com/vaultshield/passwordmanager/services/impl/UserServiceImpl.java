@@ -16,17 +16,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.vaultshield.passwordmanager.documentation.ErrorExamples.UnauthorizedErrorExample;
 import com.vaultshield.passwordmanager.exceptions.ConflictException;
 import com.vaultshield.passwordmanager.exceptions.NotFoundException;
 import com.vaultshield.passwordmanager.exceptions.QueryError;
 import com.vaultshield.passwordmanager.exceptions.SaveException;
 import com.vaultshield.passwordmanager.exceptions.TokenRefreshException;
+import com.vaultshield.passwordmanager.exceptions.UnauthorizedException;
 import com.vaultshield.passwordmanager.mapper.UserMapper;
 import com.vaultshield.passwordmanager.models.entities.SeedPhraseEntity;
 import com.vaultshield.passwordmanager.models.entities.UserEntity;
+import com.vaultshield.passwordmanager.models.request.ChangePasswordRequest;
 import com.vaultshield.passwordmanager.models.request.LoginRequest;
 import com.vaultshield.passwordmanager.models.request.RegisterRequest;
 import com.vaultshield.passwordmanager.models.request.UserRequest;
+import com.vaultshield.passwordmanager.models.response.ChangePasswordResponse;
 import com.vaultshield.passwordmanager.models.response.LoginResponse;
 import com.vaultshield.passwordmanager.models.response.RegisterResponse;
 import com.vaultshield.passwordmanager.repository.SeedPhraseRepository;
@@ -160,6 +164,24 @@ public class UserServiceImpl implements UserService {
             existingUser.setUsername(user.getUsername());
 
         return userRepository.save(existingUser);
+    }
+
+    @Override
+    public ResponseEntity<ChangePasswordResponse> changeUserPassword(ChangePasswordRequest request, String id) throws NotFoundException, SaveException{
+        Optional<UserEntity> userToChange = userRepository.findById(id);
+        if (!userToChange.isPresent())
+            throw new NotFoundException(ErrorMessages.USER_NOT_FOUND);
+        if (!userToChange.get().getPassword().equals(request.getPassword()))
+            throw new UnauthorizedException(ErrorMessages.BAD_CREDENTIALS);
+
+       UserEntity existingUser = userToChange.get();
+       if (request.getNewPassword() != null)
+            existingUser.setPassword(request.getNewPassword());
+        
+      userRepository.save(existingUser);
+      return new ResponseEntity<>(
+        new ChangePasswordResponse("user changed successfully"),
+        HttpStatus.OK);
     }
 
     @Override
