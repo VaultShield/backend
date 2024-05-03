@@ -2,6 +2,7 @@ package com.vaultshield.passwordmanager.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,6 +23,7 @@ import com.vaultshield.passwordmanager.mapper.UserMapper;
 import com.vaultshield.passwordmanager.models.request.ChangePasswordRequest;
 import com.vaultshield.passwordmanager.models.request.RecoverRequest;
 import com.vaultshield.passwordmanager.models.request.UserRequest;
+import com.vaultshield.passwordmanager.models.response.ChangePasswordResponse;
 import com.vaultshield.passwordmanager.models.response.UserResponse;
 import com.vaultshield.passwordmanager.services.impl.UserServiceImpl;
 import com.vaultshield.passwordmanager.utils.ErrorMessages;
@@ -77,11 +79,11 @@ public class UserController {
                         @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = UnauthorizedErrorExample.class)))
         })
         @PatchMapping("/password/{id}")
-        public UserResponse changeUserPassword(
+        public ResponseEntity<ChangePasswordResponse> changeUserPassword(
                 @Valid @RequestBody @Schema(implementation = ChangePasswordRequest.class)
                         ChangePasswordRequest request,
                         @PathVariable String id) {
-                return changeUserPassword(request, id);
+                return userService.changeUserPassword(request, id);
         }
 
         @Operation(summary = "Delete an existing user")
