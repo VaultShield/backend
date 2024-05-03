@@ -1,17 +1,17 @@
 package com.vaultshield.passwordmanager.models.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.vaultshield.passwordmanager.documentation.ExampleValues;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class ChangePasswordRequest {
-    private String username;
+
+    @Schema(description = "Password", example = ExampleValues.PASSWORD)
     private String password;
-
-    @JsonProperty("new_password")
+    @Schema(description = "New password", example = ExampleValues.NEW_PASSWORD)
     private String newPassword;
-
 }
