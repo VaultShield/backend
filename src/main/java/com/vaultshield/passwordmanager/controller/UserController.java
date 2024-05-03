@@ -21,7 +21,6 @@ import com.vaultshield.passwordmanager.documentation.ErrorExamples.NotFoundError
 import com.vaultshield.passwordmanager.documentation.ErrorExamples.UnauthorizedErrorExample;
 import com.vaultshield.passwordmanager.mapper.UserMapper;
 import com.vaultshield.passwordmanager.models.request.ChangePasswordRequest;
-import com.vaultshield.passwordmanager.models.request.RecoverRequest;
 import com.vaultshield.passwordmanager.models.request.UserRequest;
 import com.vaultshield.passwordmanager.models.response.ChangePasswordResponse;
 import com.vaultshield.passwordmanager.models.response.UserResponse;

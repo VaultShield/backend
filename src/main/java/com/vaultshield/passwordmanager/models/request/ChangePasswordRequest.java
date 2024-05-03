@@ -11,7 +11,7 @@ import lombok.Setter;
 public class ChangePasswordRequest {
 
     @Schema(description = "Password", example = ExampleValues.PASSWORD)
-    private String password;
+    private String oldPassword;
     @Schema(description = "New password", example = ExampleValues.NEW_PASSWORD)
     private String newPassword;
 }
