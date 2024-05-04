@@ -57,3 +57,4 @@ tmp/
 *.sublime-workspace
 *.idea/
 *.vscode/
+.github/
