@@ -2,16 +2,15 @@ FROM golang:1.22 as builder
 
 WORKDIR /app
 
-COPY . .
-
-# Compilación!
-#RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o go-service1 .
-#FROM scratch
-#COPY --from=builder /app/myapp .
-
+COPY go.mod go.sum ./
 RUN go mod download
 
-EXPOSE 4000
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o go-service .
+FROM scratch
+COPY --from=builder /app/go-service /go-service
+
+EXPOSE 8085
  
-CMD ["go", "run", "."]
-# CMD ["./myapp"]
+CMD ["./go-service"]
