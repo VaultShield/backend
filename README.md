@@ -11,6 +11,20 @@ Welcome to [VaultShield](https://github.com/VaultShield) Java API, please follow
 ## Before try use
 Check please the deploy repository [app](https://github.com/VaultShield/app) here can you deploy and serve the complete project
 
+## If you want deploy only backend
+make sure you have **docker**!!
+
+first fill the data in .env.example and change the name to just ".env"
+(min 32 characters in JWT properties)
+```yml
+.\start.ps1
+```
+for MacOs or linux users
+```yml
+chmod +x start.sh
+./start.sh
+```
+
 ## Swagger Docs
 You can access the swagger to review also from the documentation, make sure to start the project first and not make any errors!
 - http://localhost:8080/swagger-ui/index.html#/
