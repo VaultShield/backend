@@ -1,0 +1,60 @@
+# Maven
+target/*.war
+target/*.zip
+target/classes/
+target/test-classes/
+target/generated-sources/
+target/tmp/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+**/pom.xml
+
+# logs and configs files
+*.log
+*.tmp
+*.swp
+*.swo
+*.class
+
+# IDE's
+.classpath
+.project
+.settings/
+.idea/
+.vscode/
+
+# Go
+bin/
+pkg/
+src/**/*.o
+src/**/*.a
+*.exe
+*.test
+
+# system
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Enviroment files
+.env
+.env.*
+
+#Temp
+tmp/
+
+# Ignore editor directories and files
+*.sublime-project
+*.sublime-workspace
+*.idea/
+*.vscode/
