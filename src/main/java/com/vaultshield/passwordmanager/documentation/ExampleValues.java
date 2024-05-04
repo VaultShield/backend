@@ -7,6 +7,8 @@ public class ExampleValues {
 
     public static final String PASSWORD = "password123";
 
+    public static final String NEW_PASSWORD = "newPassword123";
+
     public static final String ID = "e0ca1ae7-57be-4f49-8790-b40a78b2ba20";
 
     public static final String ACTIVE = "true";
