@@ -49,7 +49,7 @@ public class PasswordServiceImpl implements PasswordService {
             passwordEntity.setAccount(request.getAccount());
         }
         if (request.getPassword() != null) {
-            passwordEntity.setPassword(bcrypt.encode(request.getPassword()));
+            passwordEntity.setPassword(request.getPassword());
         }
         if (request.getNote() != null) {
             passwordEntity.setNote(request.getNote());

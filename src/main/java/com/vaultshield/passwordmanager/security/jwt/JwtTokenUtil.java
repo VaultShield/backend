@@ -129,12 +129,6 @@ public class JwtTokenUtil {
     }
 
     public String validateRecoverToken(String token){
-
-        if (!token.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("Token does not contain 'Bearer' type");
-        }
-        token = token.substring(7);
-
         try {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(getRecoverSingKey()).build().parseClaimsJws(token);
             Claims body = claims.getBody();
